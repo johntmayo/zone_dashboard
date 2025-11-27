@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <title>Altagether NC Dashboard Prototype</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@800&display=swap" rel="stylesheet">
   <script src="https://apis.google.com/js/api.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -15,115 +18,544 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     :root {
-      --mint: #8EBB8C;
-      --sprout: #B5E593;
-      --sunbeam: #FDF9CE;
-      --honey: #E8C694;
-      --clementine: #F95738;
-      --plum: #6A057F;
-      --sky: #B3E0F5;
-      --river: #3A6EA5;
+      --dark-green: #283618;
+      --medium-green: #606C38;
+      --light-cream: #FEFAE0;
+      --tan: #DDA15E;
+      --brown: #BC6C25;
+      --light-green: #afcc8e;
+      --lighter-green: #cdf4a0;
+      
+      /* Semantic color mappings */
+      --primary: var(--medium-green);
+      --primary-dark: var(--dark-green);
+      --accent: var(--tan);
+      --accent-dark: var(--brown);
+      --background: var(--light-cream);
+      --background-light: var(--lighter-green);
+      --highlight: var(--light-green);
+      --text: var(--dark-green);
+      --text-light: rgba(40, 54, 24, 0.7);
     }
 
     * { box-sizing: border-box; }
 
-    body {
+    html, body {
       margin: 0;
-      font-family: system-ui, sans-serif;
-      background: var(--sky);
-      color: #143039;
+      padding: 0;
+      height: 100%;
+      overflow-x: hidden;
+      overflow-y: auto;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--background) 0%, var(--background-light) 100%);
+      color: var(--text);
     }
 
-    .shell {
-      max-width: 1280px;
-      margin: 0 auto;
-      padding: 16px;
+    /* Typography - Alegreya Extra Bold for headings */
+    h1, h2, h3, h4, h5, h6,
+    .nav-item,
+    .header-left,
+    .chart-title,
+    .card-header,
+    .btn-save,
+    .btn-load,
+    .nav-load-btn {
+      font-family: 'Alegreya', serif;
+      font-weight: 800;
     }
 
-    .nav {
-      background: var(--river);
-      color: #fff;
-      padding: 12px 20px;
-      border-radius: 10px;
+    /* Top Header Bar */
+    .top-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 56px;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+      color: var(--light-cream);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      margin-bottom: 16px;
+      padding: 0 24px;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(40, 54, 24, 0.3), 0 2px 4px rgba(40, 54, 24, 0.2);
+      backdrop-filter: blur(10px);
     }
 
-    .nav-title { 
-      font-weight: 600; 
-      font-size: 1.5rem;
-    }
-    .nav-pill {
-      background: var(--mint);
-      color: #143039;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.85rem;
+    .header-left {
+      font-size: 1.2rem;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-    .main { display: flex; gap: 16px; margin-bottom: 16px; align-items: stretch; }
-
-    /* Column layout */
-    .col-left { flex: 2; display: flex; flex-direction: column; gap: 16px; }
-    .col-right { flex: 1; display: flex; flex-direction: column; gap: 16px; align-items: stretch; }
-
-    .card {
-      background: var(--sunbeam);
-      border-radius: 10px;
-      padding: 12px 14px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-      border: 1px solid rgba(0,0,0,0.05);
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.9rem;
+      font-weight: 500;
     }
 
-    .card-header {
+    .live-indicator {
+      color: var(--lighter-green);
       font-weight: 600;
-      margin-bottom: 8px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+      padding: 4px 12px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      backdrop-filter: blur(5px);
+    }
+
+    #zoneNameDisplay {
+      font-weight: 500;
+    }
+
+    /* App Container */
+    .app-container {
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      bottom: 0;
       display: flex;
-      align-items: center;
-      gap: 8px;
-      justify-content: space-between;
     }
 
-    .badge {
-      font-size: 0.75rem;
-      padding: 2px 8px;
-      border-radius: 999px;
-      background: var(--sprout);
-      color: #214025;
+    /* Left Navigation Bar */
+    .left-nav {
+      width: 240px;
+      background: linear-gradient(180deg, var(--background) 0%, rgba(254, 250, 224, 0.95) 100%);
+      border-right: 3px solid var(--primary);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      box-shadow: 4px 0 12px rgba(40, 54, 24, 0.15), 2px 0 4px rgba(40, 54, 24, 0.1);
+      overflow-y: auto;
+      overflow-x: hidden;
+      backdrop-filter: blur(10px);
     }
 
-    .map-card {
-      min-height: 500px;
-      height: 500px;
-      background: var(--mint);
+    .nav-section {
+      padding: 20px 0;
+      border-bottom: 1px solid rgba(96, 108, 56, 0.2);
+    }
+
+    .nav-section-bottom {
+      margin-top: auto;
+      border-top: 3px solid var(--primary);
+      border-bottom: none;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(5px);
+    }
+
+    .nav-item {
+      display: block;
+      width: 100%;
+      padding: 14px 24px;
+      background: none;
+      border: none;
+      text-align: left;
+      font-size: 1.05rem;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      letter-spacing: 0.3px;
       position: relative;
       overflow: hidden;
     }
 
-    .map-iframe {
-      width: 100%;
+    .nav-item::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
       height: 100%;
-      border: 0;
+      width: 4px;
+      background: var(--accent);
+      transform: scaleY(0);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .map-placeholder {
-      position: absolute;
-      inset: 0;
+    .nav-item:hover {
+      background: linear-gradient(90deg, rgba(175, 204, 142, 0.2) 0%, rgba(205, 244, 160, 0.1) 100%);
+      color: var(--primary-dark);
+      transform: translateX(4px);
+    }
+
+    .nav-item:hover::before {
+      transform: scaleY(1);
+    }
+
+    .nav-item.active {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--light-cream);
+      font-weight: 800;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-item.active::before {
+      background: var(--accent);
+      transform: scaleY(1);
+      width: 5px;
+    }
+
+    .sheet-link-section {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 500;
-      color: rgba(0,0,0,0.5);
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sheet-link-section label {
+      font-size: 0.9rem;
+      color: var(--primary-dark);
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+    }
+
+    .nav-sheet-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid rgba(96, 108, 56, 0.3);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      background: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .nav-sheet-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 4px 8px rgba(96, 108, 56, 0.2), 0 0 0 3px rgba(96, 108, 56, 0.1);
+    }
+
+    .nav-load-btn {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: var(--light-cream);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 8px rgba(188, 108, 37, 0.3), 0 2px 4px rgba(188, 108, 37, 0.2);
+      letter-spacing: 0.5px;
+    }
+
+    .nav-load-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(188, 108, 37, 0.4), 0 4px 6px rgba(188, 108, 37, 0.3);
+    }
+
+    .nav-load-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(188, 108, 37, 0.3);
+    }
+
+    /* Full Screen Map */
+    .map-container {
+      position: absolute;
+      top: 0; /* Will be adjusted dynamically by JavaScript */
+      left: 240px;
+      right: 420px; /* Leave space for floating panel */
+      bottom: 0;
+      z-index: 1;
     }
 
     #zoneMap {
       width: 100%;
-      height: calc(100% - 80px);
-      border-radius: 0 0 8px 8px;
-      z-index: 0;
+      height: 100%;
+    }
+
+    .map-toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 12px 16px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 250, 224, 0.95) 100%);
+      border: 2px solid var(--primary);
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(40, 54, 24, 0.3), 0 2px 4px rgba(40, 54, 24, 0.2);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+    }
+
+    .map-toggle-btn:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, var(--light-cream) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(40, 54, 24, 0.4), 0 4px 6px rgba(40, 54, 24, 0.3);
+    }
+
+    /* Persistent Filter Bar */
+    .filter-bar {
+      position: fixed;
+      top: 56px;
+      left: 240px;
+      right: 420px;
+      background: linear-gradient(135deg, rgba(254, 250, 224, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%);
+      border-bottom: 2px solid var(--primary);
+      z-index: 175;
+      padding: 16px 32px;
+      box-shadow: 0 2px 8px rgba(40, 54, 24, 0.1);
+      backdrop-filter: blur(10px);
+    }
+
+    .filter-bar-content {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-bar .filters-label {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--primary-dark);
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+    }
+
+    .filter-bar select {
+      padding: 10px 14px;
+      border: 2px solid rgba(96, 108, 56, 0.3);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-bar select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 4px 8px rgba(96, 108, 56, 0.2), 0 0 0 3px rgba(96, 108, 56, 0.1);
+    }
+
+    .filter-bar select.filter-active {
+      border-color: var(--accent);
+      background: rgba(221, 161, 94, 0.15);
+      box-shadow: 0 2px 6px rgba(188, 108, 37, 0.2);
+    }
+
+    .filter-bar .contact-filter-group {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-left: 8px;
+    }
+
+    .filter-bar .contact-filter-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--primary-dark);
+      user-select: none;
+    }
+
+    .filter-bar .contact-filter-checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .filter-bar .contact-filter-checkbox span {
+      font-weight: 500;
+    }
+
+    .details-header {
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--primary-dark);
+      letter-spacing: 0.5px;
+      padding: 12px 16px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Floating Right Panel */
+    .floating-panel {
+      position: fixed;
+      top: 56px;
+      right: 0;
+      width: 420px;
+      bottom: 0;
+      background: linear-gradient(180deg, var(--background) 0%, rgba(254, 250, 224, 0.98) 100%);
+      box-shadow: -4px 0 16px rgba(40, 54, 24, 0.2), -2px 0 8px rgba(40, 54, 24, 0.15);
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      border-left: 3px solid var(--primary);
+    }
+
+    /* Content Views */
+    .content-view {
+      position: absolute;
+      top: 0; /* Will be adjusted dynamically by JavaScript */
+      left: 240px;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(254, 250, 224, 0.98) 0%, rgba(255, 255, 255, 0.98) 100%);
+      z-index: 150;
+      overflow-y: auto;
+      padding: 32px;
+      backdrop-filter: blur(10px);
+    }
+
+    .content-view.active {
+      display: block;
+    }
+
+    /* Addresses & People view - leave space for floating panel */
+    .content-view#peopleView {
+      right: 420px; /* Leave space for the floating panel */
+      top: 0; /* Will be adjusted dynamically by JavaScript */
+    }
+
+    /* Address Table View */
+    .address-table-container {
+      width: 100%;
+      max-height: calc(100vh - 260px); /* Leave space for header, filters, and padding */
+      overflow-x: auto;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .address-table {
+      width: auto;
+      min-width: 100%;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 4px 12px rgba(40, 54, 24, 0.15), 0 2px 4px rgba(40, 54, 24, 0.1);
+      border-radius: 12px;
+      overflow: visible;
+      backdrop-filter: blur(10px);
+    }
+
+    .address-table thead {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--light-cream);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .address-table th {
+      padding: 16px;
+      text-align: left;
+      font-weight: 800;
+      font-size: 0.95rem;
+      letter-spacing: 0.5px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .address-table th:nth-child(1),
+    .address-table td:nth-child(1) {
+      width: auto;
+      min-width: 120px; /* Minimum width to prevent it from getting too narrow */
+      white-space: nowrap; /* Keep addresses on one line */
+    }
+
+    .address-table th:nth-child(2),
+    .address-table td:nth-child(2) {
+      width: 21%;
+      max-width: 175px;
+    }
+
+    .address-table td:nth-child(2) {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .address-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(96, 108, 56, 0.15);
+      transition: all 0.2s ease;
+    }
+
+    .address-table tbody tr {
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .address-table tbody tr:hover {
+      background: linear-gradient(90deg, rgba(175, 204, 142, 0.2) 0%, rgba(205, 244, 160, 0.15) 100%);
+      box-shadow: inset 4px 0 0 var(--accent);
+    }
+
+    .address-table tbody tr.selected {
+      background: linear-gradient(90deg, rgba(175, 204, 142, 0.3) 0%, rgba(205, 244, 160, 0.2) 100%);
+      box-shadow: inset 4px 0 0 var(--primary);
+    }
+
+    .table-filters {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filters-label {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--primary-dark);
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+    }
+
+    .contact-filter-group {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-left: 8px;
+    }
+
+    .contact-filter-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: var(--primary-dark);
+      user-select: none;
+    }
+
+    .contact-filter-checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .contact-filter-checkbox span {
+      font-weight: 500;
+    }
+
+    .table-filters select {
+      padding: 10px 14px;
+      border: 2px solid rgba(96, 108, 56, 0.3);
+      border-radius: 8px;
+      font-size: 0.9rem;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-filters select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 4px 8px rgba(96, 108, 56, 0.2), 0 0 0 3px rgba(96, 108, 56, 0.1);
     }
 
     .map-kml-input {
@@ -150,46 +582,8 @@
       background: rgba(255,255,255,1);
     }
 
-    /* Spreadsheet panel now full-width below the map */
-    .sheet-panel {
-      background: #ffffff;
-      border-radius: 10px;
-      padding: 12px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.06);
-    }
 
-    .sheet-input-row {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
-    }
-
-    .sheet-input {
-      flex: 1;
-      padding: 6px 8px;
-      border: 1px solid rgba(0,0,0,0.2);
-      border-radius: 6px;
-      font-size: 0.9rem;
-    }
-
-
-    .btn-load {
-      padding: 6px 12px;
-      background: var(--clementine);
-      color: white;
-      border: 0;
-      border-radius: 999px;
-      cursor: pointer;
-    }
-
-    .sheet-iframe {
-      width: 100%;
-      height: 480px; /* MUCH bigger now */
-      border: 1px solid rgba(0,0,0,0.1);
-      border-radius: 8px;
-    }
-
-    /* Zone Progress panel */
+    /* Zone Overview panel */
     .zone-progress-panel {
       width: 100%;
       margin-top: 16px;
@@ -200,36 +594,46 @@
     }
 
     .zone-progress-panel h3 {
-      margin: 0 0 20px 0;
-      color: var(--river);
-      font-size: 1.2rem;
-      border-bottom: 2px solid var(--river);
-      padding-bottom: 8px;
+      margin: 0 0 24px 0;
+      color: var(--primary-dark);
+      font-size: 1.4rem;
+      border-bottom: 3px solid var(--accent);
+      padding-bottom: 12px;
+      letter-spacing: 0.5px;
     }
 
     .charts-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 24px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px;
+      margin-top: 24px;
     }
 
     .chart-container {
       position: relative;
-      height: 280px;
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 8px;
-      padding: 16px;
-      padding-bottom: 40px;
-      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+      height: 300px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 250, 224, 0.9) 100%);
+      border-radius: 12px;
+      padding: 20px;
+      padding-bottom: 50px;
+      box-shadow: 0 4px 12px rgba(40, 54, 24, 0.15), 0 2px 4px rgba(40, 54, 24, 0.1);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(96, 108, 56, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .chart-container:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 16px rgba(40, 54, 24, 0.2), 0 4px 6px rgba(40, 54, 24, 0.15);
     }
 
     .chart-title {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--river);
-      margin-bottom: 12px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 16px;
       text-align: center;
+      letter-spacing: 0.5px;
     }
 
     .zone-notes-card {
@@ -238,6 +642,14 @@
       padding: 12px;
       box-shadow: 0 3px 10px rgba(0,0,0,0.06);
       margin-bottom: 16px;
+    }
+
+    .zone-notes-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
     }
 
     .zone-notes-text {
@@ -254,18 +666,23 @@
     }
 
     .btn-save-small {
-      padding: 4px 8px;
-      background: var(--clementine);
-      color: white;
+      padding: 8px 16px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: var(--light-cream);
       border: 0;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.85rem;
+      font-size: 0.9rem;
+      font-weight: 800;
       margin-left: auto;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 6px rgba(188, 108, 37, 0.3);
+      letter-spacing: 0.3px;
     }
 
     .btn-save-small:hover {
-      background: #e0452a;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(188, 108, 37, 0.4);
     }
 
     .save-status-small {
@@ -279,12 +696,13 @@
     }
 
     .save-status-small.error {
-      color: var(--clementine);
+      color: var(--brown);
+      font-weight: 600;
     }
 
-    /* Address panel matches left column height (map 500px + gap 16px + link boxes ~140px) */
+    /* Floating Address Panel */
     .address-panel {
-      height: 656px; /* Taller to align with bottom of Support Pathways */
+      height: 100%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
@@ -302,74 +720,93 @@
       gap: 0;
       margin: 0;
       padding: 0;
-      position: absolute;
+      position: relative;
       top: 0;
       left: 0;
       right: 0;
       z-index: 10;
       align-items: stretch;
-      border-bottom: 2px solid rgba(0, 0, 0, 0.1);
-      background: rgba(255, 255, 255, 0.5);
+      border-bottom: 3px solid var(--primary);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.8) 0%, rgba(254, 250, 224, 0.6) 100%);
+      flex-shrink: 0;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 8px rgba(40, 54, 24, 0.1);
+      overflow: hidden;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
     }
 
     .tab-btn {
-      padding: 12px 24px;
+      padding: 14px 20px;
       background: transparent;
       border: none;
-      border-bottom: 3px solid transparent;
+      border-bottom: 4px solid transparent;
       cursor: pointer;
-      font-size: 0.9rem;
-      font-weight: 500;
-      color: rgba(0, 0, 0, 0.5);
-      transition: all 0.2s ease;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-light);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       position: relative;
       white-space: nowrap;
-      flex-shrink: 0;
+      flex-shrink: 1;
+      flex-grow: 0;
+      letter-spacing: 0.3px;
+      min-width: 0;
     }
 
     .tab-btn:hover {
-      color: rgba(0, 0, 0, 0.7);
-      background: rgba(0, 0, 0, 0.02);
+      color: var(--primary-dark);
+      background: linear-gradient(180deg, rgba(175, 204, 142, 0.2) 0%, rgba(205, 244, 160, 0.1) 100%);
     }
 
     .tab-btn.active {
-      color: var(--river);
-      border-bottom-color: var(--river);
+      color: var(--primary-dark);
+      border-bottom-color: var(--accent);
       background: transparent;
-      font-weight: 600;
+      font-weight: 800;
     }
 
     .tab-btn.active::after {
       content: '';
       position: absolute;
-      bottom: -2px;
+      bottom: -3px;
       left: 0;
       right: 0;
-      height: 2px;
-      background: var(--river);
+      height: 4px;
+      background: linear-gradient(90deg, var(--accent) 0%, var(--accent-dark) 100%);
+      box-shadow: 0 2px 4px rgba(188, 108, 37, 0.3);
     }
 
     .btn-contact-mode {
-      padding: 6px 12px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid rgba(0, 0, 0, 0.15);
-      border-radius: 6px;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 250, 224, 0.95) 100%);
+      border: 2px solid var(--primary);
+      border-radius: 8px;
       cursor: pointer;
       font-size: 0.85rem;
-      font-weight: 500;
-      color: var(--river);
-      transition: all 0.2s;
+      font-weight: 800;
+      color: var(--primary-dark);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(96, 108, 56, 0.2);
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin: 0;
+      box-sizing: border-box;
     }
 
     .btn-contact-mode:hover {
-      background: rgba(255, 255, 255, 1);
-      border-color: var(--river);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 1) 0%, var(--light-cream) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(96, 108, 56, 0.3);
     }
 
     .btn-contact-mode.active {
-      background: var(--river);
-      color: white;
-      border-color: var(--river);
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--light-cream);
+      border-color: var(--primary-dark);
+      box-shadow: 0 4px 12px rgba(96, 108, 56, 0.4);
     }
 
     .contact-mode-indicator {
@@ -385,29 +822,29 @@
 
     .contact-button {
       padding: 6px 12px;
-      background: var(--mint);
-      border: 1px solid var(--river);
+      background: var(--primary);
+      border: 1px solid var(--primary-dark);
       border-radius: 6px;
       cursor: pointer;
       font-size: 0.85rem;
       font-weight: 500;
-      color: var(--river);
+      color: var(--light-cream);
       transition: all 0.2s;
       margin-top: 8px;
     }
 
     .contact-button:hover {
-      background: rgba(212, 232, 215, 0.8);
+      background: var(--primary-dark);
     }
 
     .contact-button.contacted {
-      background: rgba(212, 232, 215, 0.5);
-      color: #666;
-      border-color: #999;
+      background: var(--accent);
+      color: var(--light-cream);
+      border-color: var(--accent-dark);
     }
 
     .contact-button.contacted:hover {
-      background: rgba(212, 232, 215, 0.7);
+      background: var(--accent-dark);
     }
 
     .contact-date {
@@ -462,7 +899,8 @@
     .address-panel-content {
       flex: 1;
       overflow-y: auto;
-      padding-right: 4px;
+      padding: 12px;
+      padding-right: 16px;
     }
 
     .address-filters {
@@ -560,77 +998,139 @@
     }
 
     .error {
-      color: var(--clementine);
+      color: var(--brown);
+      font-weight: 600;
     }
 
     .btn-refresh {
-      padding: 4px 10px;
-      background: var(--mint);
-      color: #143039;
-      border: 0;
-      border-radius: 6px;
+      padding: 8px 10px;
+      background: linear-gradient(135deg, var(--light-green) 0%, var(--lighter-green) 100%);
+      color: var(--primary-dark);
+      border: 2px solid var(--primary);
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.85rem;
-      margin-left: 8px;
-      transition: transform 0.2s;
+      font-size: 1.1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(96, 108, 56, 0.2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      flex-shrink: 0;
+      margin: 0;
     }
 
     .btn-refresh:hover {
-      transform: rotate(90deg);
+      transform: rotate(90deg) translateY(-2px);
+      box-shadow: 0 4px 8px rgba(96, 108, 56, 0.3);
     }
 
     .btn-refresh.active {
-      background: var(--clementine);
-      color: white;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: var(--light-cream);
+      border-color: var(--accent-dark);
     }
 
     .btn-back {
-      padding: 6px 12px;
-      background: var(--river);
-      color: white;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--light-cream);
       border: 0;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 0.85rem;
-      margin-bottom: 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin: 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 8px rgba(40, 54, 24, 0.3);
+      letter-spacing: 0.3px;
+      align-self: center;
+    }
+
+    .btn-back:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(40, 54, 24, 0.4);
     }
 
     .btn-signin {
-      padding: 8px 16px;
-      background: #4285f4;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #4285f4 0%, #357ae8 100%);
       color: white;
       border: 0;
-      border-radius: 6px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
+      font-weight: 800;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      margin: 10px 0;
+      gap: 10px;
+      margin: 12px 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+      letter-spacing: 0.3px;
     }
 
     .btn-signin:hover {
-      background: #357ae8;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(66, 133, 244, 0.5);
     }
 
     .btn-save {
-      padding: 6px 12px;
-      background: var(--mint);
-      color: #143039;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: var(--light-cream);
       border: 0;
-      border-radius: 6px;
+      border-radius: 10px;
       cursor: pointer;
-      font-size: 0.85rem;
-      margin-top: 8px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-top: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(188, 108, 37, 0.4);
+      letter-spacing: 0.3px;
+    }
+
+    .btn-save-small {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      margin-top: 0;
+    }
+
+    .btn-refresh-small {
+      padding: 8px 10px;
+      background: linear-gradient(135deg, var(--light-green) 0%, var(--lighter-green) 100%);
+      color: var(--primary-dark);
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 4px rgba(96, 108, 56, 0.2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+    }
+
+    .btn-refresh-small:hover {
+      transform: rotate(90deg) translateY(-2px);
+      box-shadow: 0 4px 8px rgba(96, 108, 56, 0.3);
     }
 
     .btn-save:hover {
-      background: var(--sprout);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(188, 108, 37, 0.5);
     }
 
     .btn-save:disabled {
       opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
     }
 
     .signin-prompt {
@@ -781,6 +1281,21 @@
       color: white;
     }
 
+    .save-status-top {
+      font-size: 0.65rem;
+      margin-top: 0;
+      padding: 2px 6px;
+      height: 18px;
+      line-height: 1.2;
+      text-align: right;
+      display: block;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
     .bottom-row {
       display: flex;
       gap: 16px;
@@ -809,106 +1324,103 @@
 </head>
 
 <body>
-  <div class="shell">
-
-    <header class="nav">
-      <div class="nav-title" id="navTitle">Altagether Zone Dashboard</div>
-      <div class="nav-pill">Prototype</div>
-    </header>
-
-    <main class="main">
-      <!-- LEFT COLUMN -->
-      <section class="col-left">
-
-        <!-- MAP -->
-        <div class="card map-card">
-          <div class="card-header">
-            <span>Zone Map</span>
-            <span class="badge">Interactive</span>
-            <button id="mapToggleBtn" class="map-toggle-btn" title="Toggle satellite view">🛰️</button>
-          </div>
-          <!-- <input type="text" id="kmlUrlInput" class="map-kml-input" placeholder="Optional: Paste KML file URL for zone boundary" /> -->
-          <div id="zoneMap"></div>
-        </div>
-
-        <!-- BOTTOM LINKS -->
-        <div class="bottom-row">
-          <div class="card bottom-card">
-            <div class="card-header"><span>Altagether Links</span></div>
-            <ul class="link-list">
-              <li><a href="#">NC Calendar</a></li>
-              <li><a href="#">Community Agreements</a></li>
-            </ul>
-          </div>
-
-          <div class="card bottom-card">
-            <div class="card-header"><span>News Links</span></div>
-            <ul class="link-list">
-              <li><a href="#">Fire Recovery News</a></li>
-              <li><a href="#">County Updates</a></li>
-            </ul>
-          </div>
-
-          <div class="card bottom-card">
-            <div class="card-header"><span>Support Pathways</span></div>
-            <ul class="link-list">
-              <li><a href="#">Disaster Case Mgmt</a></li>
-              <li><a href="#">Legal Aid</a></li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      <!-- RIGHT COLUMN -->
-      <section class="col-right">
-        <div class="card address-panel">
-          <div class="address-panel-tabs">
-            <button class="tab-btn active" id="addressesTab" data-tab="addresses">Addresses</button>
-            <button class="tab-btn" id="zoneNotesTab" data-tab="notes">Zone Notes</button>
-            <div style="margin-left: auto; padding: 8px 12px; display: flex; gap: 8px; align-items: center;">
-              <button class="btn-contact-mode" id="contactModeBtn" title="Toggle contact tracking mode">📞 Contact Mode</button>
-              <button class="btn-refresh" id="refreshAddressesBtn" title="Refresh addresses now">↻</button>
-            </div>
-          </div>
-          <div style="height: 48px; flex-shrink: 0;">
-            <!-- Spacer for tabs -->
-          </div>
-          <div class="address-panel-content" id="addressPanelContent">
-            <div class="empty">Load a spreadsheet to see addresses</div>
-          </div>
-          <div class="zone-notes-content" id="zoneNotesContent" style="display: none;">
-            <textarea id="zoneNotesText" class="zone-notes-text" placeholder="Zone-level notes appear here..."></textarea>
-            <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
-              <div class="save-status-small" id="zoneNotesStatus"></div>
-              <button class="btn-save-small" id="saveZoneNotesBtn" title="Save notes">💾 Save</button>
-            </div>
-          </div>
-          <div id="signinPrompt" style="display: none;" class="signin-prompt">
-            <p><strong>Sign in to edit</strong><br>Click below to sign in with Google and enable editing</p>
-            <button class="btn-signin" id="signInBtn">
-              <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#fff" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill-rule="evenodd"/><path fill="#fff" d="M9 18c2.43 0 4.467-.806 5.96-2.184l-2.908-2.258c-.806.54-1.837.86-3.052.86-2.347 0-4.33-1.584-5.04-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill-rule="evenodd"/><path fill="#fff" d="M3.96 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.348 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.003-2.332z" fill-rule="evenodd"/><path fill="#fff" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.96 7.293C4.67 5.163 6.653 3.58 9 3.58z" fill-rule="evenodd"/></svg>
-              Sign in with Google
-            </button>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <!-- SPREADSHEET (full width below main content) -->
-    <div class="card sheet-panel">
-      <div class="card-header">
-        <span>Your Zone Spreadsheet</span>
-      </div>
-      <div class="sheet-input-row">
-        <input id="sheetUrlInput" class="sheet-input" placeholder="Paste Google Sheet /edit link" />
-        <button class="btn-load" id="loadSheetBtn">Load</button>
-      </div>
-      <iframe id="sheetFrame" class="sheet-iframe"></iframe>
+  <!-- Top Header Bar -->
+  <div class="top-header">
+    <div class="header-left" id="headerLeft">Zone XX • Altagether Dashboard</div>
+    <div class="header-right">
+      <span class="live-indicator">Live updates</span>
+    </div>
     </div>
 
-    <!-- ZONE PROGRESS PANEL -->
-    <div class="zone-progress-panel" id="zoneProgressPanel" style="display: none;">
-      <h3>Zone Progress</h3>
+    <!-- Persistent Filter Bar -->
+    <div class="filter-bar" id="filterBar" style="display: none;">
+      <div class="filter-bar-content" id="filterBarContent">
+        <!-- Filters will be inserted here -->
+      </div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+    <!-- Left Navigation Bar -->
+    <nav class="left-nav">
+      <div class="nav-section">
+        <button class="nav-item" data-view="map" id="navMap">Map</button>
+        <button class="nav-item active" data-view="people" id="navPeople">Addresses & People</button>
+        <button class="nav-item" data-view="progress" id="navProgress">Zone Overview</button>
+        <button class="nav-item" data-view="tools" id="navTools">Tools</button>
+        <button class="nav-item" data-view="meetups" id="navMeetups">Meetups</button>
+        <button class="nav-item" data-view="help" id="navHelp">Help</button>
+      </div>
+      <div class="nav-section nav-section-bottom">
+        <div class="sheet-link-section">
+          <label>Link your zone spreadsheet</label>
+          <input id="sheetUrlInput" class="nav-sheet-input" placeholder="Paste Google Sheet URL" />
+          <button class="nav-load-btn" id="loadSheetBtn">Load</button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Full Screen Map -->
+    <div class="map-container">
+      <div id="zoneMap"></div>
+    </div>
+
+    <!-- Floating Right Panel (Addresses/Zone Notes/Contact Mode) -->
+    <div class="floating-panel" id="floatingPanel">
+      <div class="address-panel">
+        <div class="address-panel-tabs">
+          <div class="details-header">Details</div>
+          <button class="tab-btn" id="zoneNotesTab" data-tab="notes" style="display: none;">Zone Notes</button>
+          <div style="margin-left: auto; padding: 8px 8px; display: flex; gap: 0; align-items: center; flex-shrink: 0; min-width: 0;">
+            <button class="btn-contact-mode" id="contactModeBtn" title="Toggle contact tracking mode">📞 Contact Mode</button>
+          </div>
+        </div>
+        <div class="address-panel-content" id="addressPanelContent">
+          <div class="empty">Load a spreadsheet to see addresses</div>
+        </div>
+        <div class="zone-notes-content" id="zoneNotesContent" style="display: none;">
+          <textarea id="zoneNotesText" class="zone-notes-text" placeholder="Zone-level notes appear here..."></textarea>
+          <div style="margin-top: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div class="save-status-small" id="zoneNotesStatus"></div>
+            <button class="btn-save-small" id="saveZoneNotesBtn" title="Save notes">💾 Save</button>
+          </div>
+        </div>
+        <div id="signinPrompt" style="display: none;" class="signin-prompt">
+          <p><strong>Sign in to edit</strong><br>Click below to sign in with Google and enable editing</p>
+          <button class="btn-signin" id="signInBtn">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#fff" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill-rule="evenodd"/><path fill="#fff" d="M9 18c2.43 0 4.467-.806 5.96-2.184l-2.908-2.258c-.806.54-1.837.86-3.052.86-2.347 0-4.33-1.584-5.04-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill-rule="evenodd"/><path fill="#fff" d="M3.96 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.348 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.003-2.332z" fill-rule="evenodd"/><path fill="#fff" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.96 7.293C4.67 5.163 6.653 3.58 9 3.58z" fill-rule="evenodd"/></svg>
+            Sign in with Google
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Views -->
+    <!-- Map View (just shows map, no overlay) -->
+    <div class="content-view" id="mapView" style="display: none;">
+      <!-- Map view doesn't need content - map is always visible in background -->
+    </div>
+
+    <!-- Addresses & People View (Table) -->
+    <div class="content-view" id="peopleView" style="display: none;">
+      <div id="peopleTableView"></div>
+    </div>
+
+    <!-- Tools View -->
+    <div class="content-view" id="toolsView" style="display: none;">
+      <h2 style="margin-top: 0; color: var(--primary-dark); font-size: 2rem; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(40, 54, 24, 0.1);">Tools</h2>
+      <p>Tools menu coming soon...</p>
+    </div>
+
+    <!-- Meetups View -->
+    <div class="content-view" id="meetupsView" style="display: none;">
+      <h2 style="margin-top: 0; color: var(--primary-dark); font-size: 2rem; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(40, 54, 24, 0.1);">Meetups</h2>
+      <p>Meetups feature coming soon...</p>
+    </div>
+
+    <!-- Zone Overview View -->
+    <div class="content-view" id="progressView" style="display: none;">
+      <h2 style="margin-top: 0; color: var(--primary-dark); font-size: 2rem; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(40, 54, 24, 0.1);">Zone Overview</h2>
       <div class="charts-grid" id="chartsGrid">
         <div class="chart-container">
           <div class="chart-title">People Contacted</div>
@@ -928,18 +1440,24 @@
         </div>
       </div>
     </div>
+
+    <!-- Help View -->
+    <div class="content-view" id="helpView" style="display: none;">
+      <h2 style="margin-top: 0; color: var(--primary-dark); font-size: 2rem; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(40, 54, 24, 0.1);">Help</h2>
+      <p>Help documentation coming soon...</p>
+    </div>
   </div>
 
   <script>
     const input = document.getElementById("sheetUrlInput");
-    const frame = document.getElementById("sheetFrame");
     const btn = document.getElementById("loadSheetBtn");
-    const refreshBtn = document.getElementById("refreshAddressesBtn");
+    // Refresh button removed - data auto-loads after sign-in
     const addressPanelContent = document.getElementById("addressPanelContent");
     const signInBtn = document.getElementById("signInBtn");
     const signinPrompt = document.getElementById("signinPrompt");
-    // const kmlUrlInput = document.getElementById("kmlUrlInput"); // Commented out - KML input hidden for now
 
+    // Navigation state
+    let currentView = 'people'; // Default view
     let currentSheetUrl = '';
     let sheetData = [];
     let selectedAddress = null; // Track currently selected address
@@ -949,6 +1467,11 @@
     let currentStreetFilter = 'all'; // Current street filter
     let currentDamageFilter = 'all'; // Current damage filter
     let currentStatusFilter = 'all'; // Current household status filter
+    let currentRebuildFilter = 'all'; // Current rebuild status filter
+    let showContactedAddresses = true; // Show addresses with contacted people
+    let showUncontactedAddresses = true; // Show addresses with uncontacted people
+    let tableSortColumn = null; // Current sort column
+    let tableSortDirection = 'asc'; // Sort direction: 'asc' or 'desc'
     let zoneMap = null; // Leaflet map instance
     let addressMarkers = []; // Array of address markers
     let kmlLayer = null; // KML boundary layer
@@ -957,6 +1480,7 @@
     let zoneNotes = ''; // Zone-level notes
     let zoneKmlUrl = ''; // Zone KML URL from metadata
     let metadataSheetId = null; // Sheet ID for metadata sheet
+    let autoSaveTimer = null; // Timer for debounced auto-save
 
     // Load OAuth token from localStorage
     const savedToken = localStorage.getItem('googleOAuthToken');
@@ -975,7 +1499,6 @@
       if (accessToken) {
         setTimeout(() => {
           if (currentSheetUrl) {
-            frame.src = currentSheetUrl;
             loadAddressData(currentSheetUrl);
           }
         }, 1000);
@@ -1039,8 +1562,19 @@
             localStorage.setItem('googleOAuthToken', accessToken);
             localStorage.setItem('googleOAuthTokenExpiry', expiry.toString());
             updateSignInUI();
-            // Refresh current address if one is selected
-            if (selectedAddress && currentSheetUrl) {
+            
+            // Auto-load data after sign-in if we have a sheet URL
+            const savedSheetUrl = localStorage.getItem('savedSheetUrl');
+            const sheetUrlToLoad = currentSheetUrl || savedSheetUrl;
+            
+            if (sheetUrlToLoad) {
+              currentSheetUrl = sheetUrlToLoad;
+              // Small delay to ensure UI updates
+              setTimeout(() => {
+                loadAddressData(sheetUrlToLoad);
+              }, 500);
+            } else if (selectedAddress && currentSheetUrl) {
+              // Fallback: refresh current address if one is selected
               loadAddressData(currentSheetUrl);
             }
           },
@@ -1262,13 +1796,18 @@
         savedScrollPosition = addressPanelContent.scrollTop;
       }
 
+      if (!addressPanelContent) {
+        console.error('addressPanelContent element not found');
+        return;
+      }
+
       addressPanelContent.innerHTML = '<div class="loading">Loading addresses...</div>';
 
       // Require OAuth sign-in to read data
       if (!accessToken) {
         addressPanelContent.innerHTML = '<div class="error">Please sign in with Google to view data.</div>';
         // Show sign-in prompt
-        signinPrompt.style.display = 'block';
+        if (signinPrompt) signinPrompt.style.display = 'block';
         return;
       }
 
@@ -1435,17 +1974,6 @@
         
         // Update header with Zone information
         const zoneCol = headers.find(h => h.toLowerCase().includes('zone'));
-        let zoneValue = '';
-        if (zoneCol && data.length > 0 && data[0][zoneCol]) {
-          zoneValue = data[0][zoneCol].trim();
-        }
-        const navTitle = document.getElementById('navTitle');
-        if (zoneValue) {
-          navTitle.textContent = `${zoneValue} • Altagether Zone Dashboard`;
-        } else {
-          navTitle.textContent = 'Altagether Zone Dashboard';
-        }
-        
         // Store sheet ID for writing (sheetInfo already defined above)
         if (sheetInfo) {
           currentSheetId = sheetInfo.sheetId;
@@ -1459,6 +1987,20 @@
         currentDamageFilter = 'all';
         currentStatusFilter = 'all';
         
+        // Extract zone name from ZoneName column if available
+        const zoneNameCol = headers.find(h => h.toLowerCase() === 'zonename' || h.toLowerCase() === 'zone name');
+        const headerLeft = document.getElementById('headerLeft');
+        if (zoneNameCol && data.length > 0 && data[0][zoneNameCol]) {
+          const zoneName = data[0][zoneNameCol].trim();
+          if (zoneName && headerLeft) {
+            headerLeft.textContent = `${zoneName} • Altagether Dashboard`;
+          }
+        } else {
+          if (headerLeft) {
+            headerLeft.textContent = 'Zone XX • Altagether Dashboard';
+          }
+        }
+        
         // If an address was selected, restore that view; otherwise show list
         if (selectedAddress && addressMap.has(selectedAddress)) {
           displayAddressDetails(selectedAddress, true); // true = preserve scroll
@@ -1468,6 +2010,14 @@
           setTimeout(() => {
             addressPanelContent.scrollTop = savedScrollPosition;
           }, 0);
+        }
+        
+        // Populate persistent filter bar
+        populateFilterBar();
+        
+        // Update table view if in people view
+        if (currentView === 'people') {
+          displayAddressTable();
         }
         
         // Update zone progress charts
@@ -1500,22 +2050,66 @@
       }
     }
 
+    // Normalize street name by removing unit numbers, suffixes, and other variations
+    function normalizeStreet(street) {
+      if (!street) return '';
+      
+      let normalized = street.trim();
+      
+      // Remove common unit indicators and everything after them
+      // Patterns like: "Madison Ave Unit", "Madison Ave Apt B", "Madison Ave #2", etc.
+      const unitPatterns = [
+        /\s+(Unit|Apt|Apartment|Suite|Ste|#|No\.|Number)\s+.*$/i,
+        /\s+(Unit|Apt|Apartment|Suite|Ste)\s*$/i,
+        /\s+#\s*\d+.*$/i,
+        /\s+\d+[A-Z]?\s*$/, // Trailing numbers/letters like "123" or "B"
+      ];
+      
+      for (const pattern of unitPatterns) {
+        normalized = normalized.replace(pattern, '');
+      }
+      
+      // Remove common directional/location suffixes
+      // Patterns like: "Madison Ave Rear", "Maple Street Front", etc.
+      const suffixPatterns = [
+        /\s+(Rear|Front|Back|Side|North|South|East|West|N|S|E|W)\s*$/i,
+        /\s+[A-Z]\s*$/, // Single letter suffix like "B" or "A"
+      ];
+      
+      for (const pattern of suffixPatterns) {
+        normalized = normalized.replace(pattern, '');
+      }
+      
+      // Clean up extra whitespace
+      normalized = normalized.trim();
+      
+      return normalized;
+    }
+
     // Extract street name from full address
     function extractStreet(address) {
+      let street = '';
+      
       // Use Street column if available (preferred method)
       if (sheetData && sheetData.streetCol && sheetData.addressMap && sheetData.addressMap.has(address)) {
         const rows = sheetData.addressMap.get(address);
         if (rows && rows.length > 0 && rows[0][sheetData.streetCol]) {
-          return rows[0][sheetData.streetCol].trim();
+          street = rows[0][sheetData.streetCol].trim();
         }
       }
+      
       // Fallback: try to extract from address string (e.g., "2054 MADISON AVE" -> "MADISON AVE")
-      // This is a simple fallback - assumes format like "NUMBER STREET"
-      const parts = address.split(/\s+/);
-      if (parts.length > 1) {
-        return parts.slice(1).join(' '); // Everything after the first part (house number)
+      if (!street) {
+        const parts = address.split(/\s+/);
+        if (parts.length > 1) {
+          street = parts.slice(1).join(' '); // Everything after the first part (house number)
+        } else {
+          street = address;
+        }
       }
-      return address;
+      
+      // Normalize the street name to handle units, suffixes, etc.
+      return normalizeStreet(street);
     }
 
     // Get unique streets from all addresses
@@ -1586,6 +2180,21 @@
       return Array.from(statuses).sort();
     }
 
+    // Check if an address has any contacted people
+    function isAddressContacted(address) {
+      const contactDateCol = sheetData.headers.find(h => h.toLowerCase().includes('contact') && h.toLowerCase().includes('date'));
+      if (!contactDateCol) return false;
+      
+      const rows = sheetData.addressMap.get(address);
+      if (!rows || rows.length === 0) return false;
+      
+      // Check if any person at this address has a contact date
+      return rows.some(row => {
+        const contactDate = row[contactDateCol];
+        return contactDate !== undefined && contactDate !== null && String(contactDate).trim() !== '';
+      });
+    }
+
     // Get damage value for an address
     function getAddressDamage(address) {
       const damageCol = sheetData.headers.find(h => h.toLowerCase().includes('damage'));
@@ -1609,6 +2218,389 @@
     }
 
     // Display list of addresses
+    // Populate persistent filter bar
+    function populateFilterBar() {
+      if (!sheetData || !sheetData.addressMap) {
+        const filterBar = document.getElementById('filterBar');
+        if (filterBar) filterBar.style.display = 'none';
+        return;
+      }
+
+      const filterBar = document.getElementById('filterBar');
+      const filterBarContent = document.getElementById('filterBarContent');
+      if (!filterBar || !filterBarContent) return;
+
+      const addresses = Array.from(sheetData.addressMap.keys());
+      const headers = sheetData.headers;
+      const damageCol = headers.find(h => h.toLowerCase().includes('damage'));
+      const statusCol = headers.find(h => h.toLowerCase().includes('household status'));
+      const rebuildCol = headers.find(h => h.toLowerCase().includes('rebuild'));
+      const contactDateCol = headers.find(h => h.toLowerCase().includes('contact') && h.toLowerCase().includes('date'));
+
+      const streets = getUniqueStreets(addresses);
+      const damages = getUniqueDamage(addresses);
+      const statuses = getUniqueStatus(addresses);
+
+      // Get unique rebuild status values
+      const rebuildStatuses = new Set();
+      if (rebuildCol) {
+        sheetData.data.forEach(row => {
+          if (row[rebuildCol] !== undefined && row[rebuildCol] !== null) {
+            const value = String(row[rebuildCol]).trim();
+            if (value) rebuildStatuses.add(value);
+          }
+        });
+      }
+      const rebuildStatusesArray = Array.from(rebuildStatuses).sort();
+
+      const html = `
+        <span class="filters-label">Filters:</span>
+        <select id="persistentStreetFilter" class="${currentStreetFilter !== 'all' ? 'filter-active' : ''}">
+          <option value="all" ${currentStreetFilter === 'all' ? 'selected' : ''}>All Streets</option>
+          ${streets.map(street => `<option value="${street.replace(/"/g, '&quot;')}" ${currentStreetFilter === street ? 'selected' : ''}>${street}</option>`).join('')}
+        </select>
+        <select id="persistentDamageFilter" class="${currentDamageFilter !== 'all' ? 'filter-active' : ''}">
+          <option value="all" ${currentDamageFilter === 'all' ? 'selected' : ''}>All Damage Status</option>
+          ${damages.map(damage => `<option value="${damage.replace(/"/g, '&quot;')}" ${currentDamageFilter === damage ? 'selected' : ''}>${damage}</option>`).join('')}
+        </select>
+        <select id="persistentStatusFilter" class="${currentStatusFilter !== 'all' ? 'filter-active' : ''}">
+          <option value="all" ${currentStatusFilter === 'all' ? 'selected' : ''}>All Household Status</option>
+          ${statuses.map(status => `<option value="${status.replace(/"/g, '&quot;')}" ${currentStatusFilter === status ? 'selected' : ''}>${status}</option>`).join('')}
+        </select>
+        ${rebuildCol ? `<select id="persistentRebuildFilter" class="${currentRebuildFilter !== 'all' ? 'filter-active' : ''}">
+          <option value="all" ${currentRebuildFilter === 'all' ? 'selected' : ''}>All Rebuild Status</option>
+          ${rebuildStatusesArray.map(status => `<option value="${status.replace(/"/g, '&quot;')}" ${currentRebuildFilter === status ? 'selected' : ''}>${status}</option>`).join('')}
+        </select>` : ''}
+        ${contactDateCol ? `
+        <div class="contact-filter-group">
+          <label class="contact-filter-checkbox">
+            <input type="checkbox" id="persistentShowContactedCheckbox" ${showContactedAddresses ? 'checked' : ''}>
+            <span>Show contacted addresses</span>
+          </label>
+          <label class="contact-filter-checkbox">
+            <input type="checkbox" id="persistentShowUncontactedCheckbox" ${showUncontactedAddresses ? 'checked' : ''}>
+            <span>Show uncontacted addresses</span>
+          </label>
+        </div>
+        ` : ''}
+      `;
+
+      filterBarContent.innerHTML = html;
+      filterBar.style.display = 'block';
+
+      // Add event handlers (remove old ones first to avoid duplicates)
+      const oldStreetFilter = document.getElementById('persistentStreetFilter');
+      if (oldStreetFilter) {
+        oldStreetFilter.replaceWith(oldStreetFilter.cloneNode(true));
+      }
+      const oldDamageFilter = document.getElementById('persistentDamageFilter');
+      if (oldDamageFilter) {
+        oldDamageFilter.replaceWith(oldDamageFilter.cloneNode(true));
+      }
+      const oldStatusFilter = document.getElementById('persistentStatusFilter');
+      if (oldStatusFilter) {
+        oldStatusFilter.replaceWith(oldStatusFilter.cloneNode(true));
+      }
+      const oldRebuildFilter = document.getElementById('persistentRebuildFilter');
+      if (oldRebuildFilter) {
+        oldRebuildFilter.replaceWith(oldRebuildFilter.cloneNode(true));
+      }
+      const oldContactedCheckbox = document.getElementById('persistentShowContactedCheckbox');
+      if (oldContactedCheckbox) {
+        oldContactedCheckbox.replaceWith(oldContactedCheckbox.cloneNode(true));
+      }
+      const oldUncontactedCheckbox = document.getElementById('persistentShowUncontactedCheckbox');
+      if (oldUncontactedCheckbox) {
+        oldUncontactedCheckbox.replaceWith(oldUncontactedCheckbox.cloneNode(true));
+      }
+
+      // Add event handlers
+      const streetFilter = document.getElementById('persistentStreetFilter');
+      if (streetFilter) {
+        streetFilter.addEventListener('change', (e) => {
+          currentStreetFilter = e.target.value;
+          if (currentStreetFilter !== 'all') {
+            streetFilter.classList.add('filter-active');
+          } else {
+            streetFilter.classList.remove('filter-active');
+          }
+          displayAddressTable();
+          displayAddressList(Array.from(sheetData.addressMap.keys()).sort());
+          updateMapMarkers();
+        });
+      }
+
+      const damageFilter = document.getElementById('persistentDamageFilter');
+      if (damageFilter) {
+        damageFilter.addEventListener('change', (e) => {
+          currentDamageFilter = e.target.value;
+          if (currentDamageFilter !== 'all') {
+            damageFilter.classList.add('filter-active');
+          } else {
+            damageFilter.classList.remove('filter-active');
+          }
+          displayAddressTable();
+          displayAddressList(Array.from(sheetData.addressMap.keys()).sort());
+          updateMapMarkers();
+        });
+      }
+
+      const statusFilter = document.getElementById('persistentStatusFilter');
+      if (statusFilter) {
+        statusFilter.addEventListener('change', (e) => {
+          currentStatusFilter = e.target.value;
+          if (currentStatusFilter !== 'all') {
+            statusFilter.classList.add('filter-active');
+          } else {
+            statusFilter.classList.remove('filter-active');
+          }
+          displayAddressTable();
+          displayAddressList(Array.from(sheetData.addressMap.keys()).sort());
+          updateMapMarkers();
+        });
+      }
+
+      const rebuildFilter = document.getElementById('persistentRebuildFilter');
+      if (rebuildFilter) {
+        rebuildFilter.addEventListener('change', (e) => {
+          currentRebuildFilter = e.target.value;
+          if (currentRebuildFilter !== 'all') {
+            rebuildFilter.classList.add('filter-active');
+          } else {
+            rebuildFilter.classList.remove('filter-active');
+          }
+          displayAddressTable();
+          displayAddressList(Array.from(sheetData.addressMap.keys()).sort());
+          updateMapMarkers();
+        });
+      }
+
+      const showContactedCheckbox = document.getElementById('persistentShowContactedCheckbox');
+      if (showContactedCheckbox) {
+        showContactedCheckbox.addEventListener('change', (e) => {
+          showContactedAddresses = e.target.checked;
+          displayAddressTable();
+          displayAddressList(Array.from(sheetData.addressMap.keys()).sort());
+          updateMapMarkers();
+        });
+      }
+
+      const showUncontactedCheckbox = document.getElementById('persistentShowUncontactedCheckbox');
+      if (showUncontactedCheckbox) {
+        showUncontactedCheckbox.addEventListener('change', (e) => {
+          showUncontactedAddresses = e.target.checked;
+          displayAddressTable();
+          displayAddressList(Array.from(sheetData.addressMap.keys()).sort());
+          updateMapMarkers();
+        });
+      }
+    }
+
+    // Display address table view for Addresses & People page
+    function displayAddressTable() {
+      if (!sheetData || !sheetData.addressMap) {
+        const tableView = document.getElementById('peopleTableView');
+        if (tableView) {
+          tableView.innerHTML = '<div class="empty">Load a spreadsheet to see addresses</div>';
+        }
+        return;
+      }
+      
+      const addresses = Array.from(sheetData.addressMap.keys()).sort();
+      const tableView = document.getElementById('peopleTableView');
+      if (!tableView) return;
+      
+      if (addresses.length === 0) {
+        tableView.innerHTML = '<div class="empty">No addresses found</div>';
+        return;
+      }
+      
+      const headers = sheetData.headers;
+      const damageCol = headers.find(h => h.toLowerCase().includes('damage'));
+      const statusCol = headers.find(h => h.toLowerCase().includes('household status'));
+      const rebuildCol = headers.find(h => h.toLowerCase().includes('rebuild'));
+      const residentNameCol = headers.find(h => {
+        const lower = h.toLowerCase();
+        return lower.includes('resident name') || (lower.includes('name') && !lower.includes('first') && !lower.includes('last') && !lower.includes('nc'));
+      });
+      const ageCol = headers.find(h => h.toLowerCase() === 'age');
+      const phoneCol = headers.find(h => h.toLowerCase().includes('phone') && !h.toLowerCase().includes('nc'));
+      const emailCol = headers.find(h => h.toLowerCase().includes('email'));
+      const contactDateCol = headers.find(h => h.toLowerCase().includes('contact') && h.toLowerCase().includes('date'));
+      
+      // Get unique values for filters
+      const streets = getUniqueStreets(addresses);
+      const damages = getUniqueDamage(addresses);
+      const statuses = getUniqueStatus(addresses);
+      
+      // Get unique rebuild status values
+      const rebuildStatuses = new Set();
+      if (rebuildCol) {
+        sheetData.data.forEach(row => {
+          if (row[rebuildCol] !== undefined && row[rebuildCol] !== null) {
+            const value = String(row[rebuildCol]).trim();
+            if (value) rebuildStatuses.add(value);
+          }
+        });
+      }
+      const rebuildStatusesArray = Array.from(rebuildStatuses).sort();
+      
+      // Filter addresses
+      const filteredAddresses = addresses.filter(addr => {
+        if (currentStreetFilter !== 'all' && extractStreet(addr) !== currentStreetFilter) return false;
+        if (currentDamageFilter !== 'all' && getAddressDamage(addr) !== currentDamageFilter) return false;
+        if (currentStatusFilter !== 'all' && getAddressStatus(addr) !== currentStatusFilter) return false;
+        if (currentRebuildFilter !== 'all' && rebuildCol) {
+          const rows = sheetData.addressMap.get(addr);
+          if (rows && rows[0]) {
+            const rebuildValue = (rows[0][rebuildCol] || '').trim();
+            if (rebuildValue !== currentRebuildFilter) return false;
+          } else {
+            return false;
+          }
+        }
+        // Contact status filter
+        if (contactDateCol) {
+          const isContacted = isAddressContacted(addr);
+          if (isContacted && !showContactedAddresses) return false;
+          if (!isContacted && !showUncontactedAddresses) return false;
+        }
+        return true;
+      });
+      
+      // Sort addresses if sort column is set
+      let sortedAddresses = [...filteredAddresses];
+      if (tableSortColumn) {
+        sortedAddresses.sort((a, b) => {
+          const rowsA = sheetData.addressMap.get(a);
+          const rowsB = sheetData.addressMap.get(b);
+          let valA = '';
+          let valB = '';
+          
+          if (tableSortColumn === 'address') {
+            valA = a;
+            valB = b;
+          } else if (tableSortColumn === 'residents') {
+            const residentsA = rowsA && residentNameCol ? rowsA.filter(r => r[residentNameCol]?.trim()).length : 0;
+            const residentsB = rowsB && residentNameCol ? rowsB.filter(r => r[residentNameCol]?.trim()).length : 0;
+            valA = residentsA.toString();
+            valB = residentsB.toString();
+          } else {
+            const col = headers.find(h => h.toLowerCase() === tableSortColumn.toLowerCase());
+            if (col) {
+              valA = rowsA && rowsA[0] ? (rowsA[0][col] || '').toString().trim() : '';
+              valB = rowsB && rowsB[0] ? (rowsB[0][col] || '').toString().trim() : '';
+            }
+          }
+          
+          const comparison = valA.localeCompare(valB, undefined, { numeric: true, sensitivity: 'base' });
+          return tableSortDirection === 'asc' ? comparison : -comparison;
+        });
+      }
+      
+      const html = `
+        <div class="address-table-container">
+          <table class="address-table">
+            <thead>
+              <tr>
+                <th class="sortable" data-sort="address" title="Click to sort">Address ${tableSortColumn === 'address' ? (tableSortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                <th class="sortable" data-sort="residents" title="Click to sort">Residents ${tableSortColumn === 'residents' ? (tableSortDirection === 'asc' ? '↑' : '↓') : ''}</th>
+                ${damageCol ? `<th class="sortable" data-sort="${damageCol.toLowerCase()}" title="Click to sort">Damage ${tableSortColumn === damageCol.toLowerCase() ? (tableSortDirection === 'asc' ? '↑' : '↓') : ''}</th>` : ''}
+                ${statusCol ? `<th class="sortable" data-sort="${statusCol.toLowerCase()}" title="Click to sort">Household Status ${tableSortColumn === statusCol.toLowerCase() ? (tableSortDirection === 'asc' ? '↑' : '↓') : ''}</th>` : ''}
+                ${rebuildCol ? `<th class="sortable" data-sort="${rebuildCol.toLowerCase()}" title="Click to sort">Rebuild Status ${tableSortColumn === rebuildCol.toLowerCase() ? (tableSortDirection === 'asc' ? '↑' : '↓') : ''}</th>` : ''}
+                ${ageCol ? `<th class="sortable" data-sort="${ageCol.toLowerCase()}" title="Click to sort">Age ${tableSortColumn === ageCol.toLowerCase() ? (tableSortDirection === 'asc' ? '↑' : '↓') : ''}</th>` : ''}
+                ${phoneCol ? `<th>Phone</th>` : ''}
+                ${emailCol ? `<th>Email</th>` : ''}
+                ${contactDateCol ? `<th class="sortable" data-sort="${contactDateCol.toLowerCase()}" title="Click to sort">Last Contact ${tableSortColumn === contactDateCol.toLowerCase() ? (tableSortDirection === 'asc' ? '↑' : '↓') : ''}</th>` : ''}
+              </tr>
+            </thead>
+            <tbody>
+              ${sortedAddresses.map(addr => {
+                const rows = sheetData.addressMap.get(addr);
+                const residents = [];
+                if (rows && residentNameCol) {
+                  rows.forEach(row => {
+                    if (row[residentNameCol] && row[residentNameCol].trim()) {
+                      residents.push(row[residentNameCol].trim());
+                    }
+                  });
+                }
+                const damage = damageCol && rows && rows[0] ? (rows[0][damageCol] || '').trim() : '';
+                const status = statusCol && rows && rows[0] ? (rows[0][statusCol] || '').trim() : '';
+                const rebuild = rebuildCol && rows && rows[0] ? (rows[0][rebuildCol] || '').trim() : '';
+                const age = ageCol && rows && rows[0] ? (rows[0][ageCol] || '').trim() : '';
+                const phone = phoneCol && rows && rows[0] ? (rows[0][phoneCol] || '').trim() : '';
+                const email = emailCol && rows && rows[0] ? (rows[0][emailCol] || '').trim() : '';
+                const contactDate = contactDateCol && rows && rows[0] ? (rows[0][contactDateCol] || '').trim() : '';
+                
+                // Format residents with truncation
+                let residentsDisplay = '-';
+                if (residents.length > 0) {
+                  const residentsText = residents.join(', ');
+                  const totalCount = residents.length;
+                  // If text is long, truncate and show count
+                  if (residentsText.length > 40) {
+                    residentsDisplay = residentsText.substring(0, 37) + '... (' + totalCount + ' Total)';
+                  } else {
+                    residentsDisplay = residentsText;
+                  }
+                }
+                
+                return `
+                  <tr class="table-address-row" data-address="${addr.replace(/"/g, '&quot;')}">
+                    <td title="${addr}">${addr}</td>
+                    <td title="${residents.length > 0 ? residents.join(', ') : '-'}">${residentsDisplay}</td>
+                    ${damageCol ? `<td>${damage || '-'}</td>` : ''}
+                    ${statusCol ? `<td>${status || '-'}</td>` : ''}
+                    ${rebuildCol ? `<td>${rebuild || '-'}</td>` : ''}
+                    ${ageCol ? `<td>${age || '-'}</td>` : ''}
+                    ${phoneCol ? `<td>${phone || '-'}</td>` : ''}
+                    ${emailCol ? `<td>${email || '-'}</td>` : ''}
+                    ${contactDateCol ? `<td>${contactDate || '-'}</td>` : ''}
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+      
+      tableView.innerHTML = html;
+      
+      // Add sortable column handlers
+      document.querySelectorAll('.sortable').forEach(th => {
+        th.style.cursor = 'pointer';
+        th.addEventListener('click', () => {
+          const sortCol = th.getAttribute('data-sort');
+          if (tableSortColumn === sortCol) {
+            // Toggle direction if same column
+            tableSortDirection = tableSortDirection === 'asc' ? 'desc' : 'asc';
+          } else {
+            // New column, default to ascending
+            tableSortColumn = sortCol;
+            tableSortDirection = 'asc';
+          }
+          displayAddressTable();
+        });
+      });
+      
+      // Add row click handlers
+      document.querySelectorAll('.table-address-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const address = row.getAttribute('data-address');
+          // Update selected state
+          document.querySelectorAll('.table-address-row').forEach(r => r.classList.remove('selected'));
+          row.classList.add('selected');
+          // Show details in floating panel
+          displayAddressDetails(address);
+          // Switch to people view if not already
+          if (currentView !== 'people') {
+            switchView('people');
+          }
+        });
+      });
+    }
+
     function displayAddressList(addresses) {
       // Clear selected address when showing list
       selectedAddress = null;
@@ -1623,7 +2615,11 @@
       const damages = getUniqueDamage(addresses);
       const statuses = getUniqueStatus(addresses);
       
-      // Filter addresses by all selected filters
+      // Filter addresses by all selected filters (same logic as displayAddressTable)
+      const headers = sheetData.headers;
+      const rebuildCol = headers.find(h => h.toLowerCase().includes('rebuild'));
+      const contactDateCol = headers.find(h => h.toLowerCase().includes('contact') && h.toLowerCase().includes('date'));
+      
       const filteredAddresses = addresses.filter(addr => {
         // Street filter
         if (currentStreetFilter !== 'all' && extractStreet(addr) !== currentStreetFilter) {
@@ -1643,30 +2639,26 @@
             return false;
           }
         }
+        // Rebuild filter
+        if (currentRebuildFilter !== 'all' && rebuildCol) {
+          const rows = sheetData.addressMap.get(addr);
+          if (rows && rows[0]) {
+            const rebuildValue = (rows[0][rebuildCol] || '').trim();
+            if (rebuildValue !== currentRebuildFilter) return false;
+          } else {
+            return false;
+          }
+        }
+        // Contact status filter
+        if (contactDateCol) {
+          const isContacted = isAddressContacted(addr);
+          if (isContacted && !showContactedAddresses) return false;
+          if (!isContacted && !showUncontactedAddresses) return false;
+        }
         return true;
       });
 
       const html = `
-        <div class="address-filters">
-          <select id="streetFilter">
-            <option value="all" ${currentStreetFilter === 'all' ? 'selected' : ''}>All Streets</option>
-            ${streets.map(street => `
-              <option value="${street.replace(/"/g, '&quot;')}" ${currentStreetFilter === street ? 'selected' : ''}>${street}</option>
-            `).join('')}
-          </select>
-          <select id="damageFilter">
-            <option value="all" ${currentDamageFilter === 'all' ? 'selected' : ''}>All Damage Status</option>
-            ${damages.map(damage => `
-              <option value="${damage.replace(/"/g, '&quot;')}" ${currentDamageFilter === damage ? 'selected' : ''}>${damage}</option>
-            `).join('')}
-          </select>
-          <select id="statusFilter">
-            <option value="all" ${currentStatusFilter === 'all' ? 'selected' : ''}>All Household Status</option>
-            ${statuses.map(status => `
-              <option value="${status.replace(/"/g, '&quot;')}" ${currentStatusFilter === status ? 'selected' : ''}>${status}</option>
-            `).join('')}
-          </select>
-        </div>
         <ul class="address-list">
           ${filteredAddresses.map(addr => `
             <li class="address-item" data-address="${addr.replace(/"/g, '&quot;')}">
@@ -1677,35 +2669,6 @@
       `;
       
       addressPanelContent.innerHTML = html;
-      
-      // Add filter change handlers
-      const streetFilter = document.getElementById('streetFilter');
-      if (streetFilter) {
-        streetFilter.addEventListener('change', (e) => {
-          currentStreetFilter = e.target.value;
-          displayAddressList(Array.from(sheetData.addressMap.keys()).sort());
-        });
-      }
-      
-      const damageFilter = document.getElementById('damageFilter');
-      if (damageFilter) {
-        damageFilter.addEventListener('change', (e) => {
-          currentDamageFilter = e.target.value;
-          displayAddressList(Array.from(sheetData.addressMap.keys()).sort());
-        });
-      }
-      
-      const statusFilter = document.getElementById('statusFilter');
-      if (statusFilter) {
-        statusFilter.addEventListener('change', (e) => {
-          currentStatusFilter = e.target.value;
-          displayAddressList(Array.from(sheetData.addressMap.keys()).sort());
-          updateMapMarkers(); // Update map when filter changes
-        });
-      }
-      
-      // Update map markers when filters change
-      updateMapMarkers();
 
       // Add click handlers
       document.querySelectorAll('.address-item').forEach(item => {
@@ -1728,6 +2691,9 @@
 
       // Track selected address
       selectedAddress = address;
+      
+      // Highlight the corresponding marker on the map
+      highlightSelectedMarker(address);
       
       // Save scroll position if we're refreshing
       if (preserveScroll) {
@@ -1821,7 +2787,20 @@
       });
 
       let html = `
-        <button class="btn-back" onclick="displayAddressList(Array.from(sheetData.addressMap.keys()).sort())">← Back to List</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px;">
+          <button class="btn-back" onclick="displayAddressList(Array.from(sheetData.addressMap.keys()).sort())">← Back to List</button>
+          ${accessToken ? `
+            <div style="display: flex; gap: 6px; align-items: flex-start; position: relative;">
+              <div style="display: flex; flex-direction: column; align-items: flex-end; height: 50px; justify-content: flex-start;">
+                <div style="display: flex; gap: 6px; align-items: center; margin-bottom: 2px;">
+                  <button class="btn-save btn-save-small" id="saveChangesBtnTop" style="margin: 0; align-self: center;">Save Changes</button>
+                  <button class="btn-refresh-small" id="refreshBtnTop" title="Refresh addresses now" style="margin: 0;">↻</button>
+                </div>
+                <span class="save-status save-status-top" id="saveStatusTop"></span>
+              </div>
+            </div>
+          ` : ''}
+        </div>
         <div class="address-details active">
           <h3>${address}</h3>
       `;
@@ -2050,17 +3029,52 @@
       html += '</div>';
       addressPanelContent.innerHTML = html;
       
-      // Add save button handler
+      // Add save button handlers (both top and bottom buttons)
       const saveBtn = document.getElementById('saveChangesBtn');
       if (saveBtn) {
         saveBtn.addEventListener('click', saveChanges);
       }
+      const saveBtnTop = document.getElementById('saveChangesBtnTop');
+      if (saveBtnTop) {
+        saveBtnTop.addEventListener('click', saveChanges);
+      }
+      const refreshBtnTop = document.getElementById('refreshBtnTop');
+      if (refreshBtnTop) {
+        refreshBtnTop.addEventListener('click', () => {
+          if (currentSheetUrl) {
+            loadAddressData(currentSheetUrl);
+          }
+        });
+      }
       
-      // Add change handlers for dropdowns
+      // Add change handlers for dropdowns with auto-save
       document.querySelectorAll('.editable-dropdown').forEach(dropdown => {
         dropdown.addEventListener('change', () => {
           // Mark as changed for save
           dropdown.setAttribute('data-changed', 'true');
+          // Trigger auto-save
+          triggerAutoSave();
+        });
+      });
+      
+      // Add change handlers for contenteditable fields with auto-save
+      document.querySelectorAll('.editable-field[contenteditable="true"], .editable-inline[contenteditable="true"]').forEach(field => {
+        field.addEventListener('input', () => {
+          triggerAutoSave();
+        });
+        field.addEventListener('blur', () => {
+          // Also trigger on blur in case user clicks away
+          triggerAutoSave();
+        });
+      });
+      
+      // Add change handlers for textareas with auto-save
+      document.querySelectorAll('.editable-notes, .contact-notes-quick').forEach(textarea => {
+        textarea.addEventListener('input', () => {
+          triggerAutoSave();
+        });
+        textarea.addEventListener('blur', () => {
+          triggerAutoSave();
         });
       });
       
@@ -2086,18 +3100,102 @@
       currentSheetUrl = url;
       // Save to localStorage
       localStorage.setItem('savedSheetUrl', url);
-      frame.src = url;
       
-      // Also load the address data
+      // Load the address data
       loadAddressData(url);
     });
 
     // Refresh button handler
-    refreshBtn.addEventListener("click", () => {
-      if (currentSheetUrl) {
-        loadAddressData(currentSheetUrl);
+    // Refresh button removed - data auto-loads after sign-in
+
+    // Navigation System - Single Page Navigation
+    function switchView(viewName) {
+      currentView = viewName;
+      
+      // Hide all content views
+      document.querySelectorAll('.content-view').forEach(view => {
+        view.style.display = 'none';
+        view.classList.remove('active');
+      });
+      
+      // Update nav items
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      
+      // Show selected view (map view doesn't need a content overlay)
+      if (viewName !== 'map') {
+        const selectedView = document.getElementById(viewName + 'View');
+        if (selectedView) {
+          selectedView.style.display = 'block';
+          selectedView.classList.add('active');
+        }
       }
+      
+      // Update nav button
+      const navButton = document.getElementById('nav' + viewName.charAt(0).toUpperCase() + viewName.slice(1));
+      if (navButton) {
+        navButton.classList.add('active');
+      }
+      
+      // Show/hide floating panel based on view
+      const floatingPanel = document.getElementById('floatingPanel');
+      if (viewName === 'people' || viewName === 'map') {
+        // Show floating panel for people and map views
+        if (floatingPanel) floatingPanel.style.display = 'flex';
+      } else {
+        // Hide floating panel for other views
+        if (floatingPanel) floatingPanel.style.display = 'none';
+      }
+      
+      // Show/hide filter bar based on view
+      const filterBar = document.getElementById('filterBar');
+      const shouldShowFilters = (viewName === 'people' || viewName === 'map');
+      if (shouldShowFilters) {
+        // Show filter bar for people and map views
+        if (filterBar && sheetData && sheetData.addressMap) {
+          filterBar.style.display = 'block';
+        }
+        // Adjust content views to account for filter bar
+        document.querySelectorAll('.content-view').forEach(view => {
+          view.style.top = '80px';
+        });
+        const mapContainer = document.querySelector('.map-container');
+        if (mapContainer) {
+          mapContainer.style.top = '80px';
+        }
+      } else {
+        // Hide filter bar for other views
+        if (filterBar) filterBar.style.display = 'none';
+        // Adjust content views to start at top (no filter bar)
+        document.querySelectorAll('.content-view').forEach(view => {
+          view.style.top = '0';
+        });
+        const mapContainer = document.querySelector('.map-container');
+        if (mapContainer) {
+          mapContainer.style.top = '0';
+        }
+      }
+      
+      // Update content based on view
+      if (viewName === 'people' && sheetData && sheetData.addressMap) {
+        displayAddressTable();
+      } else if (viewName === 'progress' && sheetData && sheetData.addressMap) {
+        updateZoneProgressCharts();
+      }
+      // Map view doesn't need special content updates - it just shows the map with floating panel
+    }
+    
+    // Set up navigation event listeners
+    document.querySelectorAll('.nav-item[data-view]').forEach(item => {
+      item.addEventListener('click', (e) => {
+        const viewName = e.target.getAttribute('data-view');
+        switchView(viewName);
+      });
     });
+    
+    // Initialize with map view (shows map with floating panel)
+    switchView('map');
 
     // Convert column index to letter (A, B, C, etc.) - global helper function
     function indexToColumnLetter(index) {
@@ -2110,14 +3208,43 @@
     }
 
     // Save changes to spreadsheet
-    async function saveChanges() {
+    // Debounced auto-save function
+    function triggerAutoSave() {
+      // Clear existing timer
+      if (autoSaveTimer) {
+        clearTimeout(autoSaveTimer);
+      }
+      
+      // Set new timer (1.2 seconds delay)
+      autoSaveTimer = setTimeout(() => {
+        saveChanges(true); // true = isAutoSave
+      }, 1200);
+      
+      // Show "Auto-saving..." indicator in both locations (top and bottom)
+      const saveStatus = document.getElementById('saveStatus');
+      const saveStatusTop = document.getElementById('saveStatusTop');
+      
+      if (saveStatus) {
+        saveStatus.textContent = 'Auto-saving...';
+        saveStatus.className = 'save-status saving';
+      }
+      if (saveStatusTop) {
+        saveStatusTop.textContent = 'Auto-saving...';
+        saveStatusTop.className = 'save-status saving';
+      }
+    }
+
+    async function saveChanges(isAutoSave = false) {
       if (!accessToken || !currentSheetId) {
-        alert('Please sign in to save changes.');
+        if (!isAutoSave) {
+          alert('Please sign in to save changes.');
+        }
         return;
       }
 
       const saveBtn = document.getElementById('saveChangesBtn');
       const saveStatus = document.getElementById('saveStatus');
+      const saveStatusTop = document.getElementById('saveStatusTop');
       // Get all editable elements: Notes fields (textareas), inline fields, dropdowns, and Quick Contact Notes
       const editableFields = document.querySelectorAll('.editable-field[contenteditable="true"], .editable-inline[contenteditable="true"], .editable-notes, .contact-notes-quick');
       const editableDropdowns = document.querySelectorAll('.editable-dropdown');
@@ -2126,9 +3253,20 @@
         return;
       }
 
+      if (!saveBtn || !saveStatus) {
+        console.warn('Save button or status element not found');
+        return;
+      }
+
       saveBtn.disabled = true;
-      saveStatus.textContent = 'Saving...';
-      saveStatus.className = 'save-status saving';
+      if (saveStatus) {
+        saveStatus.textContent = isAutoSave ? 'Auto-saving...' : 'Saving...';
+        saveStatus.className = 'save-status saving';
+      }
+      if (saveStatusTop) {
+        saveStatusTop.textContent = isAutoSave ? 'Auto-saving...' : 'Saving...';
+        saveStatusTop.className = 'save-status saving';
+      }
 
       try {
         // Collect all changes
@@ -2228,9 +3366,13 @@
         });
 
         if (updates.length === 0) {
-          saveStatus.textContent = 'No changes to save';
-          saveStatus.className = 'save-status';
-          saveBtn.disabled = false;
+          if (saveStatus) {
+            saveStatus.textContent = 'No changes to save';
+            saveStatus.className = 'save-status';
+          }
+          if (saveBtn) {
+            saveBtn.disabled = false;
+          }
           return;
         }
 
@@ -2266,22 +3408,62 @@
           dropdown.setAttribute('data-original-value', dropdown.value.trim());
         });
 
-        saveStatus.textContent = 'Saved!';
-        saveStatus.className = 'save-status saved';
-        
-        // Refresh data after a short delay
-        setTimeout(() => {
-          if (currentSheetUrl) {
-            loadAddressData(currentSheetUrl);
+        if (saveStatus) {
+          saveStatus.textContent = isAutoSave ? 'Auto-saved!' : 'Saved!';
+          saveStatus.className = 'save-status saved';
+          // Clear auto-save message after 2 seconds
+          if (isAutoSave) {
+            setTimeout(() => {
+              if (saveStatus && saveStatus.textContent === 'Auto-saved!') {
+                saveStatus.textContent = '';
+                saveStatus.className = 'save-status';
+              }
+            }, 2000);
           }
-        }, 1000);
+        }
+        if (saveStatusTop) {
+          saveStatusTop.textContent = isAutoSave ? 'Auto-saved!' : 'Saved!';
+          saveStatusTop.className = 'save-status saved';
+          // Clear auto-save message after 2 seconds
+          if (isAutoSave) {
+            setTimeout(() => {
+              if (saveStatusTop && saveStatusTop.textContent === 'Auto-saved!') {
+                saveStatusTop.textContent = '';
+                saveStatusTop.className = 'save-status';
+              }
+            }, 2000);
+          }
+        }
+        
+        // Refresh data after a short delay (only for manual saves to avoid too many refreshes)
+        if (!isAutoSave) {
+          setTimeout(() => {
+            if (currentSheetUrl) {
+              loadAddressData(currentSheetUrl);
+            }
+          }, 1000);
+        }
 
       } catch (error) {
         console.error('Save error:', error);
-        saveStatus.textContent = `Error: ${error.message}`;
-        saveStatus.className = 'save-status error';
+        if (saveStatus) {
+          saveStatus.textContent = `Error: ${error.message}`;
+          saveStatus.className = 'save-status error';
+        }
+        if (saveStatusTop) {
+          saveStatusTop.textContent = `Error: ${error.message}`;
+          saveStatusTop.className = 'save-status error';
+        }
+        // For auto-save errors, also show a console warning (less intrusive than alert)
+        if (isAutoSave) {
+          console.warn('Auto-save failed:', error.message);
+        } else {
+          alert(`Error saving changes: ${error.message}`);
+        }
       } finally {
-        saveBtn.disabled = false;
+        if (saveBtn) {
+          saveBtn.disabled = false;
+        }
       }
     }
 
@@ -2304,10 +3486,74 @@
             maxZoom: 19
           }).addTo(zoneMap);
           
+          // Create satellite toggle control
+          const SatelliteToggleControl = L.Control.extend({
+            onAdd: function(map) {
+              const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+              const button = L.DomUtil.create('a', 'satellite-toggle-btn', container);
+              button.href = '#';
+              button.title = 'Switch to satellite view';
+              button.innerHTML = '🛰️';
+              button.style.cssText = 'width: 30px; height: 30px; line-height: 30px; text-align: center; text-decoration: none; display: block; font-size: 18px;';
+              
+              L.DomEvent.disableClickPropagation(button);
+              L.DomEvent.on(button, 'click', L.DomEvent.stop);
+              L.DomEvent.on(button, 'click', () => {
+                if (!zoneMap) return;
+                
+                // Remove current tile layer
+                if (currentTileLayer) {
+                  zoneMap.removeLayer(currentTileLayer);
+                }
+                
+                // Toggle between street and satellite
+                if (isSatelliteMode) {
+                  // Switch to street map
+                  currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                  }).addTo(zoneMap);
+                  button.innerHTML = '🛰️';
+                  button.title = 'Switch to satellite view';
+                  isSatelliteMode = false;
+                } else {
+                  // Switch to satellite - using Google Satellite for more recent imagery
+                  currentTileLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
+                    subdomains: ['0', '1', '2', '3'],
+                    attribution: '© Google',
+                    maxZoom: 20
+                  }).addTo(zoneMap);
+                  button.innerHTML = '🗺️';
+                  button.title = 'Switch to street map';
+                  isSatelliteMode = true;
+                }
+              });
+              
+              return container;
+            }
+          });
+          
+          // Add satellite toggle control next to zoom controls
+          new SatelliteToggleControl({ position: 'topleft' }).addTo(zoneMap);
+          
+          // Invalidate size to ensure map renders correctly in full screen
+          setTimeout(() => {
+            if (zoneMap) {
+              zoneMap.invalidateSize();
+            }
+          }, 100);
+          
           console.log('Map initialized');
         } catch (error) {
           console.error('Error initializing map:', error);
         }
+      } else {
+        // If map already exists, invalidate size in case container changed
+        setTimeout(() => {
+          if (zoneMap) {
+            zoneMap.invalidateSize();
+          }
+        }, 100);
       }
       
       // Load KML if URL is provided (commented out for now)
@@ -2477,6 +3723,35 @@
       }
     }
 
+    // Highlight the selected address marker
+    function highlightSelectedMarker(address) {
+      if (!zoneMap || !addressMarkers) return;
+      
+      addressMarkers.forEach(marker => {
+        if (marker.address === address) {
+          // Highlight selected marker with red icon
+          marker.setIcon(L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+          }));
+        } else if (selectedAddress && marker.address !== selectedAddress) {
+          // Reset other markers to default blue
+          marker.setIcon(L.icon({
+            iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+          }));
+        }
+      });
+    }
+
     // Update map markers based on filtered addresses
     function updateMapMarkers() {
       if (!sheetData || !sheetData.addressMap) {
@@ -2498,8 +3773,9 @@
       addressMarkers.forEach(marker => zoneMap.removeLayer(marker));
       addressMarkers = [];
       
-      // Get filtered addresses (same logic as displayAddressList)
+      // Get filtered addresses (same logic as displayAddressTable)
       const addresses = Array.from(sheetData.addressMap.keys());
+      const contactDateCol = sheetData.headers.find(h => h.toLowerCase().includes('contact') && h.toLowerCase().includes('date'));
       const filteredAddresses = addresses.filter(address => {
         // Street filter
         if (currentStreetFilter !== 'all') {
@@ -2517,6 +3793,25 @@
         if (currentStatusFilter !== 'all') {
           const status = getAddressStatus(address);
           if (status !== currentStatusFilter) return false;
+        }
+        
+        // Rebuild filter
+        const rebuildCol = sheetData.headers.find(h => h.toLowerCase().includes('rebuild'));
+        if (currentRebuildFilter !== 'all' && rebuildCol) {
+          const rows = sheetData.addressMap.get(address);
+          if (rows && rows[0]) {
+            const rebuildValue = (rows[0][rebuildCol] || '').trim();
+            if (rebuildValue !== currentRebuildFilter) return false;
+          } else {
+            return false;
+          }
+        }
+        
+        // Contact status filter
+        if (contactDateCol) {
+          const isContacted = isAddressContacted(address);
+          if (isContacted && !showContactedAddresses) return false;
+          if (!isContacted && !showUncontactedAddresses) return false;
         }
         
         return true;
@@ -2568,7 +3863,20 @@
         
         // Create marker
         try {
-          const marker = L.marker([lat, lon]).addTo(zoneMap);
+          // Use red icon if this is the selected address, blue otherwise
+          const isSelected = selectedAddress === address;
+          const marker = L.marker([lat, lon], {
+            icon: L.icon({
+              iconUrl: isSelected 
+                ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png'
+                : 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+              shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+              iconSize: [25, 41],
+              iconAnchor: [12, 41],
+              popupAnchor: [1, -34],
+              shadowSize: [41, 41]
+            })
+          }).addTo(zoneMap);
           
           // Build popup content
           let popupContent = `<strong>${address}</strong>`;
@@ -2613,6 +3921,9 @@
             displayAddressDetails(address);
           });
           
+          // Store address with marker for highlighting
+          marker.address = address;
+          
           addressMarkers.push(marker);
           bounds.push([lat, lon]);
           markerCount++;
@@ -2634,38 +3945,7 @@
       }
     }
 
-    // Map toggle button handler
-    const mapToggleBtn = document.getElementById('mapToggleBtn');
-    if (mapToggleBtn) {
-      mapToggleBtn.addEventListener('click', () => {
-        if (!zoneMap) return;
-        
-        // Remove current tile layer
-        if (currentTileLayer) {
-          zoneMap.removeLayer(currentTileLayer);
-        }
-        
-        // Toggle between street and satellite
-        if (isSatelliteMode) {
-          // Switch to street map
-          currentTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors',
-            maxZoom: 19
-          }).addTo(zoneMap);
-          mapToggleBtn.textContent = '🛰️';
-          isSatelliteMode = false;
-        } else {
-          // Switch to satellite - using Google Satellite for more recent imagery
-          currentTileLayer = L.tileLayer('https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}', {
-            subdomains: ['0', '1', '2', '3'],
-            attribution: '© Google',
-            maxZoom: 20
-          }).addTo(zoneMap);
-          mapToggleBtn.textContent = '🗺️';
-          isSatelliteMode = true;
-        }
-      });
-    }
+    // Satellite toggle is now handled by Leaflet control (created in initializeMap)
 
     // KML URL input handler (commented out for now)
     // if (kmlUrlInput) {
@@ -3001,15 +4281,11 @@
     // Update Zone Progress Charts
     function updateZoneProgressCharts() {
       if (!sheetData || !sheetData.data || sheetData.data.length === 0) {
-        const panel = document.getElementById('zoneProgressPanel');
-        if (panel) panel.style.display = 'none';
         return;
       }
 
-      // Show the panel
-      const panel = document.getElementById('zoneProgressPanel');
-      if (!panel) return;
-      panel.style.display = 'block';
+      // Charts are now in the progress view, not a separate panel
+      // The view will be shown/hidden by the navigation system
 
       const headers = sheetData.headers;
       const data = sheetData.data;
