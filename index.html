@@ -261,6 +261,7 @@
       right: 420px; /* Leave space for floating panel */
       bottom: 0;
       z-index: 1;
+      display: none; /* Hidden by default, shown only in map view */
     }
 
     #zoneMap {
@@ -412,6 +413,169 @@
 
     .content-view.active {
       display: block;
+    }
+
+    /* Home Dashboard View */
+    .home-dashboard {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .home-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .btn-open-map {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--light-cream);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: 'Alegreya', serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(40, 54, 24, 0.2);
+    }
+
+    .btn-open-map:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(40, 54, 24, 0.3);
+    }
+
+    .home-panels-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .home-panel-wide {
+      grid-column: 1 / -1;
+    }
+
+    .home-panel {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(40, 54, 24, 0.15), 0 2px 4px rgba(40, 54, 24, 0.1);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      min-height: 300px;
+    }
+
+    .home-panel-header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--light-cream);
+      padding: 20px 24px;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .home-panel-header h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-family: 'Alegreya', serif;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+
+    .home-panel-content {
+      padding: 24px;
+      color: var(--text);
+    }
+
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid rgba(96, 108, 56, 0.15);
+    }
+
+    .stat-item:last-child {
+      border-bottom: none;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      font-family: 'Alegreya', serif;
+    }
+
+    .stat-group {
+      margin-bottom: 24px;
+    }
+
+    .stat-group-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      font-family: 'Alegreya', serif;
+    }
+
+    .damage-stat-item, .rebuild-stat-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(96, 108, 56, 0.1);
+    }
+
+    .damage-stat-item:last-child, .rebuild-stat-item:last-child {
+      border-bottom: none;
+    }
+
+    .damage-stat-label, .rebuild-stat-label {
+      color: var(--text);
+    }
+
+    .damage-stat-count, .rebuild-stat-count {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .announcement-item {
+      padding: 16px;
+      margin-bottom: 16px;
+      background: rgba(175, 204, 142, 0.1);
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .announcement-title {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+      font-family: 'Alegreya', serif;
+    }
+
+    .announcement-description {
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .announcement-link {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .announcement-link:hover {
+      text-decoration: underline;
     }
 
     /* Addresses & People view - leave space for floating panel */
@@ -1344,8 +1508,9 @@
     <!-- Left Navigation Bar -->
     <nav class="left-nav">
       <div class="nav-section">
+        <button class="nav-item active" data-view="home" id="navHome">Home</button>
         <button class="nav-item" data-view="map" id="navMap">Map</button>
-        <button class="nav-item active" data-view="people" id="navPeople">Addresses & People</button>
+        <button class="nav-item" data-view="people" id="navPeople">Addresses & People</button>
         <button class="nav-item" data-view="progress" id="navProgress">Zone Overview</button>
         <button class="nav-item" data-view="tools" id="navTools">Tools</button>
         <button class="nav-item" data-view="meetups" id="navMeetups">Meetups</button>
@@ -1396,6 +1561,48 @@
     </div>
 
     <!-- Content Views -->
+    <!-- Home Dashboard View -->
+    <div class="content-view" id="homeView" style="display: none;">
+      <div class="home-dashboard">
+        <div class="home-header">
+          <h1 style="margin: 0; color: var(--primary-dark); font-size: 2.5rem; letter-spacing: 0.5px;">Zone Dashboard</h1>
+          <button class="btn-open-map" id="openMapBtn">🗺️ Open Map</button>
+        </div>
+        
+        <div class="home-panels-grid">
+          <!-- Panel A: Zone Snapshot -->
+          <div class="home-panel">
+            <div class="home-panel-header">
+              <h2>Zone Snapshot</h2>
+            </div>
+            <div class="home-panel-content" id="zoneSnapshotContent">
+              <div class="loading">Loading zone data...</div>
+            </div>
+          </div>
+          
+          <!-- Panel B: Rebuild Progress Snapshot -->
+          <div class="home-panel">
+            <div class="home-panel-header">
+              <h2>Rebuild Progress Snapshot</h2>
+            </div>
+            <div class="home-panel-content" id="rebuildProgressContent">
+              <div class="loading">Loading rebuild data...</div>
+            </div>
+          </div>
+          
+          <!-- Panel C: From Altagether -->
+          <div class="home-panel home-panel-wide">
+            <div class="home-panel-header">
+              <h2>From Altagether</h2>
+            </div>
+            <div class="home-panel-content" id="altagetherContent">
+              <div class="loading">Loading announcements...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <!-- Map View (just shows map, no overlay) -->
     <div class="content-view" id="mapView" style="display: none;">
       <!-- Map view doesn't need content - map is always visible in background -->
@@ -1457,7 +1664,7 @@
     const signinPrompt = document.getElementById("signinPrompt");
 
     // Navigation state
-    let currentView = 'people'; // Default view
+    let currentView = 'home'; // Default view
     let currentSheetUrl = '';
     let sheetData = [];
     let selectedAddress = null; // Track currently selected address
@@ -2026,6 +2233,12 @@
         // Initialize or update map with addresses
         initializeMap();
         updateMapMarkers();
+        
+        // Switch to home view and update dashboard
+        if (currentView === 'map' || !currentView) {
+          switchView('home');
+        }
+        updateHomeDashboard();
         
       } catch (error) {
         console.error('Error loading spreadsheet:', error);
@@ -3144,13 +3357,21 @@
         // Show floating panel for people and map views
         if (floatingPanel) floatingPanel.style.display = 'flex';
       } else {
-        // Hide floating panel for other views
+        // Hide floating panel for other views (including home)
         if (floatingPanel) floatingPanel.style.display = 'none';
       }
       
       // Show/hide filter bar based on view
       const filterBar = document.getElementById('filterBar');
       const shouldShowFilters = (viewName === 'people' || viewName === 'map');
+      
+      // Show/hide map container based on view
+      const mapContainer = document.querySelector('.map-container');
+      if (viewName === 'map') {
+        if (mapContainer) mapContainer.style.display = 'block';
+      } else {
+        if (mapContainer) mapContainer.style.display = 'none';
+      }
       if (shouldShowFilters) {
         // Show filter bar for people and map views
         if (filterBar && sheetData && sheetData.addressMap) {
@@ -3178,7 +3399,9 @@
       }
       
       // Update content based on view
-      if (viewName === 'people' && sheetData && sheetData.addressMap) {
+      if (viewName === 'home' && sheetData && sheetData.addressMap) {
+        updateHomeDashboard();
+      } else if (viewName === 'people' && sheetData && sheetData.addressMap) {
         displayAddressTable();
       } else if (viewName === 'progress' && sheetData && sheetData.addressMap) {
         updateZoneProgressCharts();
@@ -3194,8 +3417,17 @@
       });
     });
     
-    // Initialize with map view (shows map with floating panel)
-    switchView('map');
+    // Initialize with home view (default landing page)
+    currentView = 'home';
+    switchView('home');
+    
+    // Set up Open Map button
+    const openMapBtn = document.getElementById('openMapBtn');
+    if (openMapBtn) {
+      openMapBtn.addEventListener('click', () => {
+        switchView('map');
+      });
+    }
 
     // Convert column index to letter (A, B, C, etc.) - global helper function
     function indexToColumnLetter(index) {
@@ -4570,6 +4802,359 @@
       }
     }
 
+    // Home Dashboard Functions
+    
+    // Update all home dashboard panels
+    function updateHomeDashboard() {
+      if (!sheetData || !sheetData.addressMap) {
+        // Show empty state
+        const zoneSnapshotContent = document.getElementById('zoneSnapshotContent');
+        const rebuildProgressContent = document.getElementById('rebuildProgressContent');
+        if (zoneSnapshotContent) {
+          zoneSnapshotContent.innerHTML = '<div class="empty">Load a spreadsheet to see zone stats</div>';
+        }
+        if (rebuildProgressContent) {
+          rebuildProgressContent.innerHTML = '<div class="empty">Load a spreadsheet to see rebuild progress</div>';
+        }
+        return;
+      }
+      
+      updateZoneSnapshot();
+      updateRebuildProgress();
+      fetchAndDisplayCentralFeed();
+    }
+    
+    // Panel A: Zone Snapshot
+    function updateZoneSnapshot() {
+      if (!sheetData || !sheetData.addressMap || !sheetData.headers) {
+        return;
+      }
+      
+      const content = document.getElementById('zoneSnapshotContent');
+      if (!content) return;
+      
+      const headers = sheetData.headers;
+      const data = sheetData.data;
+      const addressMap = sheetData.addressMap;
+      
+      // 1. Households in your zone (count of addresses)
+      const householdsCount = addressMap.size;
+      
+      // 2. People in your zone (sum of "# of residents" field, fallback to 1)
+      const residentsCol = headers.find(h => {
+        const lower = h.toLowerCase();
+        return lower.includes('# of residents') || 
+               lower.includes('number of residents') ||
+               lower.includes('residents') ||
+               (lower.includes('#') && lower.includes('resident'));
+      });
+      
+      let peopleCount = 0;
+      if (residentsCol) {
+        data.forEach(row => {
+          const residents = parseInt(row[residentsCol]) || 0;
+          peopleCount += residents > 0 ? residents : 1;
+        });
+      } else {
+        // Fallback: 1 person per address
+        peopleCount = householdsCount;
+      }
+      
+      // 3. Homes by damage status
+      const damageCol = headers.find(h => h.toLowerCase().includes('damage'));
+      const damageCounts = {
+        'Total Loss': 0,
+        'Partial Loss': 0,
+        'Standing Home': 0,
+        'Unknown': 0
+      };
+      
+      if (damageCol) {
+        addressMap.forEach((rows, address) => {
+          const row = rows[0];
+          const damage = (row[damageCol] || '').trim();
+          if (damage) {
+            const damageLower = damage.toLowerCase();
+            if (damageLower.includes('total')) {
+              damageCounts['Total Loss']++;
+            } else if (damageLower.includes('partial')) {
+              damageCounts['Partial Loss']++;
+            } else if (damageLower.includes('standing')) {
+              damageCounts['Standing Home']++;
+            } else {
+              // Check if it matches one of our known values
+              if (damageCounts.hasOwnProperty(damage)) {
+                damageCounts[damage]++;
+              } else {
+                damageCounts['Unknown']++;
+              }
+            }
+          } else {
+            damageCounts['Unknown']++;
+          }
+        });
+      }
+      
+      // 4. Households not yet contacted
+      const contactStatusCol = headers.find(h => {
+        const lower = h.toLowerCase();
+        return lower.includes('contact status');
+      });
+      const contactDateCol = headers.find(h => {
+        const lower = h.toLowerCase();
+        return (lower.includes('contact') && lower.includes('date')) ||
+               lower.includes('last contact');
+      });
+      
+      let uncontactedCount = 0;
+      addressMap.forEach((rows, address) => {
+        const row = rows[0];
+        let isContacted = false;
+        
+        if (contactStatusCol && row[contactStatusCol]) {
+          const status = String(row[contactStatusCol]).toLowerCase().trim();
+          isContacted = status && !status.includes('uncontacted') && status !== 'no';
+        } else if (contactDateCol && row[contactDateCol]) {
+          const date = String(row[contactDateCol]).trim();
+          isContacted = date.length > 0;
+        }
+        
+        if (!isContacted) {
+          uncontactedCount++;
+        }
+      });
+      
+      // 5. Last updated - find most recent timestamp
+      const timestampCols = headers.filter(h => {
+        const lower = h.toLowerCase();
+        return lower.includes('date') || 
+               lower.includes('timestamp') ||
+               lower.includes('updated') ||
+               lower.includes('last modified');
+      });
+      
+      let lastUpdated = null;
+      timestampCols.forEach(col => {
+        data.forEach(row => {
+          const value = row[col];
+          if (value) {
+            const date = new Date(value);
+            if (!isNaN(date.getTime())) {
+              if (!lastUpdated || date > lastUpdated) {
+                lastUpdated = date;
+              }
+            }
+          }
+        });
+      });
+      
+      // Format last updated date
+      let lastUpdatedText = 'Not available';
+      if (lastUpdated) {
+        lastUpdatedText = lastUpdated.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+      }
+      
+      // Render the panel
+      content.innerHTML = `
+        <div class="stat-group">
+          <div class="stat-item">
+            <span class="stat-label">Households in your zone</span>
+            <span class="stat-value">${householdsCount}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">People in your zone</span>
+            <span class="stat-value">${peopleCount}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Households not yet contacted</span>
+            <span class="stat-value">${uncontactedCount}</span>
+          </div>
+        </div>
+        
+        <div class="stat-group">
+          <div class="stat-group-title">Homes by Damage Status</div>
+          ${Object.entries(damageCounts).map(([status, count]) => `
+            <div class="damage-stat-item">
+              <span class="damage-stat-label">${status}</span>
+              <span class="damage-stat-count">${count}</span>
+            </div>
+          `).join('')}
+        </div>
+        
+        <div class="stat-group">
+          <div class="stat-item">
+            <span class="stat-label">Last updated</span>
+            <span class="stat-value" style="font-size: 1rem;">${lastUpdatedText}</span>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Panel B: Rebuild Progress Snapshot
+    function updateRebuildProgress() {
+      if (!sheetData || !sheetData.addressMap || !sheetData.headers) {
+        return;
+      }
+      
+      const content = document.getElementById('rebuildProgressContent');
+      if (!content) return;
+      
+      const headers = sheetData.headers;
+      const addressMap = sheetData.addressMap;
+      
+      // Find Rebuild Stage column
+      const rebuildCol = headers.find(h => {
+        const lower = h.toLowerCase();
+        return lower.includes('rebuild stage') ||
+               (lower.includes('rebuild') && lower.includes('stage'));
+      });
+      
+      const rebuildCounts = {};
+      const defaultStages = [
+        'Not started',
+        'Planning / Design',
+        'Permits in progress',
+        'Construction in progress',
+        'Rebuild completed'
+      ];
+      
+      // Initialize default stages
+      defaultStages.forEach(stage => {
+        rebuildCounts[stage] = 0;
+      });
+      rebuildCounts['Unknown'] = 0;
+      
+      if (rebuildCol) {
+        addressMap.forEach((rows, address) => {
+          const row = rows[0];
+          const stage = (row[rebuildCol] || '').trim();
+          if (stage) {
+            // Try to match to known stages or use as-is
+            let matched = false;
+            for (const defaultStage of defaultStages) {
+              if (stage.toLowerCase().includes(defaultStage.toLowerCase()) ||
+                  defaultStage.toLowerCase().includes(stage.toLowerCase())) {
+                rebuildCounts[defaultStage]++;
+                matched = true;
+                break;
+              }
+            }
+            if (!matched) {
+              // Check if it's an exact match to any key
+              if (rebuildCounts.hasOwnProperty(stage)) {
+                rebuildCounts[stage]++;
+              } else {
+                rebuildCounts['Unknown']++;
+              }
+            }
+          } else {
+            rebuildCounts['Unknown']++;
+          }
+        });
+      } else {
+        // No rebuild column found
+        rebuildCounts['Unknown'] = addressMap.size;
+      }
+      
+      // Render the panel
+      content.innerHTML = `
+        <div class="stat-group">
+          ${Object.entries(rebuildCounts).filter(([stage, count]) => count > 0 || stage === 'Not started').map(([stage, count]) => `
+            <div class="rebuild-stat-item">
+              <span class="rebuild-stat-label">${stage}</span>
+              <span class="rebuild-stat-count">${count}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+    
+    // Panel C: From Altagether (Central Feed)
+    async function fetchAndDisplayCentralFeed() {
+      const content = document.getElementById('altagetherContent');
+      if (!content) return;
+      
+      content.innerHTML = '<div class="loading">Loading announcements...</div>';
+      
+      try {
+        const response = await fetch('/api/homepage-feed');
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        const feed = await response.json();
+        
+        let html = '';
+        
+        // Next Meeting
+        if (feed.next_meeting && feed.next_meeting.description) {
+          html += `
+            <div class="announcement-item">
+              <div class="announcement-title">Next Meeting</div>
+              <div class="announcement-description">${feed.next_meeting.description}</div>
+              ${feed.next_meeting.date ? `<div class="announcement-description"><strong>Date:</strong> ${feed.next_meeting.date}</div>` : ''}
+              ${feed.next_meeting.time ? `<div class="announcement-description"><strong>Time:</strong> ${feed.next_meeting.time}</div>` : ''}
+              ${feed.next_meeting.location ? `<div class="announcement-description"><strong>Location:</strong> ${feed.next_meeting.location}</div>` : ''}
+            </div>
+          `;
+        }
+        
+        // Newsletter
+        if (feed.newsletter && feed.newsletter.title) {
+          html += `
+            <div class="announcement-item">
+              <div class="announcement-title">Newsletter</div>
+              <div class="announcement-description">${feed.newsletter.title}</div>
+              ${feed.newsletter.url ? `<a href="${feed.newsletter.url}" target="_blank" class="announcement-link">Read more →</a>` : ''}
+            </div>
+          `;
+        }
+        
+        // Volunteer Asks
+        if (feed.volunteer_asks && feed.volunteer_asks.length > 0) {
+          feed.volunteer_asks.forEach(item => {
+            if (item.title || item.description) {
+              html += `
+                <div class="announcement-item">
+                  <div class="announcement-title">${item.title || 'Volunteer Opportunity'}</div>
+                  ${item.description ? `<div class="announcement-description">${item.description}</div>` : ''}
+                  ${item.url ? `<a href="${item.url}" target="_blank" class="announcement-link">Learn more →</a>` : ''}
+                </div>
+              `;
+            }
+          });
+        }
+        
+        // Partner Items
+        if (feed.partner_items && feed.partner_items.length > 0) {
+          feed.partner_items.forEach(item => {
+            if (item.title || item.description) {
+              html += `
+                <div class="announcement-item">
+                  <div class="announcement-title">${item.title || 'Partner Item'}</div>
+                  ${item.description ? `<div class="announcement-description">${item.description}</div>` : ''}
+                  ${item.url ? `<a href="${item.url}" target="_blank" class="announcement-link">Learn more →</a>` : ''}
+                </div>
+              `;
+            }
+          });
+        }
+        
+        if (!html) {
+          html = '<div class="empty">No announcements at this time.</div>';
+        }
+        
+        content.innerHTML = html;
+      } catch (error) {
+        console.error('Error fetching central feed:', error);
+        content.innerHTML = '<div class="error">Failed to load announcements. Please try again later.</div>';
+      }
+    }
+    
     // Make displayAddressList available globally for back button
     window.displayAddressList = displayAddressList;
   </script>
