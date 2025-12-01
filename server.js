@@ -1,10 +1,9 @@
 const express = require('express');
 const cors = require('cors');
-const { google } = require('googleapis');
 const path = require('path');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 
 // Middleware
 app.use(cors());
@@ -13,61 +12,126 @@ app.use(express.static('.')); // Serve static files from current directory
 
 // Google Sheets API setup
 // Using public sheet access (no auth needed if sheet is set to "Anyone with link can view")
-const CENTRAL_SHEET_ID = '1PaqcX2BSypJjLBDMA3DnlAxCHK5y0TWMSbCIkTScIQU';
+// Set CENTRAL_SHEET_ID environment variable or update the default below
+// To get the sheet ID from a Google Sheets URL: https://docs.google.com/spreadsheets/d/SHEET_ID_HERE/edit
+const CENTRAL_SHEET_ID = process.env.CENTRAL_SHEET_ID || '1PaqcX2BSypJjLBDMA3DnlAxCHK5y0TWMSbCIkTScIQU';
 
 // Helper function to fetch Google Sheet data (public access)
 async function fetchPublicSheet(sheetId, range = 'A1:ZZ1000') {
   try {
     // For public sheets, we can use CSV export
-    const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`;
+    // Try multiple URL formats
+    const urls = [
+      `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=0`,
+      `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=Sheet1`,
+      `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv`
+    ];
+    
     const https = require('https');
     const http = require('http');
     
-    return new Promise((resolve, reject) => {
-      const protocol = url.startsWith('https') ? https : http;
-      
-      protocol.get(url, (response) => {
-        if (response.statusCode !== 200) {
-          reject(new Error(`HTTP ${response.statusCode}: ${response.statusMessage}`));
-          return;
-        }
-        
-        let csvText = '';
-        response.on('data', (chunk) => {
-          csvText += chunk.toString();
-        });
-        
-        response.on('end', () => {
-          try {
-            // Parse CSV
-            const lines = csvText.split('\n').filter(line => line.trim());
-            if (lines.length === 0) {
-              resolve({ headers: [], rows: [] });
-              return;
+    // Try each URL until one works
+    for (const url of urls) {
+      try {
+        const result = await new Promise((resolve, reject) => {
+          const protocol = url.startsWith('https') ? https : http;
+          
+          const request = protocol.get(url, (response) => {
+            // Handle redirects
+            if (response.statusCode === 301 || response.statusCode === 302 || response.statusCode === 307 || response.statusCode === 308) {
+              const redirectUrl = response.headers.location;
+              if (redirectUrl) {
+                console.log('Following redirect to:', redirectUrl);
+                // Create new request for redirect
+                const redirectProtocol = redirectUrl.startsWith('https') ? https : http;
+                const redirectRequest = redirectProtocol.get(redirectUrl, (redirectResponse) => {
+                  handleResponse(redirectResponse, resolve, reject);
+                });
+                redirectRequest.on('error', reject);
+                redirectRequest.setTimeout(10000, () => {
+                  redirectRequest.destroy();
+                  reject(new Error('Request timeout'));
+                });
+                return;
+              }
             }
             
-            // Parse header
-            const headers = parseCSVLine(lines[0]);
-            
-            // Parse rows
-            const rows = lines.slice(1).map(line => {
-              const values = parseCSVLine(line);
-              const row = {};
-              headers.forEach((header, index) => {
-                row[header] = values[index] || '';
-              });
-              return row;
-            });
-            
-            resolve({ headers, rows });
-          } catch (error) {
+            handleResponse(response, resolve, reject);
+          });
+          
+          request.on('error', (error) => {
+            console.error('Request error for URL:', url, error);
             reject(error);
-          }
+          });
+          
+          request.setTimeout(10000, () => {
+            request.destroy();
+            reject(new Error('Request timeout'));
+          });
         });
-      }).on('error', (error) => {
-        reject(error);
+        
+        // If we got here, the request succeeded
+        return result;
+      } catch (error) {
+        console.log(`Failed to fetch with URL: ${url}`, error.message);
+        // Continue to next URL
+        continue;
+      }
+    }
+    
+    // If all URLs failed, throw error
+    throw new Error('All export URL formats failed. Please ensure the sheet is set to "Anyone with the link can view" and try publishing it to web (File > Share > Publish to web).');
+    
+    function handleResponse(response, resolve, reject) {
+      if (response.statusCode !== 200) {
+        console.error(`HTTP ${response.statusCode}: ${response.statusMessage}`);
+        reject(new Error(`HTTP ${response.statusCode}: ${response.statusMessage}`));
+        return;
+      }
+      
+      let csvText = '';
+      response.on('data', (chunk) => {
+        csvText += chunk.toString();
       });
-    });
+      
+      response.on('end', () => {
+        try {
+          // Check if we got HTML instead of CSV (common when sheet isn't public)
+          if (csvText.trim().startsWith('<!DOCTYPE') || csvText.trim().startsWith('<html')) {
+            console.error('Received HTML instead of CSV. Sheet may not be publicly accessible.');
+            reject(new Error('Sheet is not publicly accessible. Please ensure it is set to "Anyone with the link can view" and try publishing it to web (File > Share > Publish to web).'));
+            return;
+          }
+          
+          // Parse CSV
+          const lines = csvText.split('\n').filter(line => line.trim());
+          if (lines.length === 0) {
+            resolve({ headers: [], rows: [] });
+            return;
+          }
+          
+          // Parse header
+          const headers = parseCSVLine(lines[0]);
+          console.log('Parsed headers:', headers);
+          
+          // Parse rows
+          const rows = lines.slice(1).map(line => {
+            const values = parseCSVLine(line);
+            const row = {};
+            headers.forEach((header, index) => {
+              row[header] = values[index] || '';
+            });
+            return row;
+          });
+          
+          console.log(`Parsed ${rows.length} rows`);
+          resolve({ headers, rows });
+        } catch (error) {
+          console.error('Error parsing CSV:', error);
+          reject(error);
+        }
+      });
+    }
   } catch (error) {
     console.error('Error fetching sheet:', error);
     throw error;
@@ -115,84 +179,40 @@ app.get('/api/homepage-feed', async (req, res) => {
     // Fetch the central sheet data
     const { headers, rows } = await fetchPublicSheet(CENTRAL_SHEET_ID);
     
-    // The sheet structure: Column A has labels, Column B has content
-    // Row 1: Announcements | content
-    // Row 2: Next Meeting | content
-    // Row 3: Newsletter | content
-    // Row 4: Volunteer Asks | content
-    // Row 5: Partner Items | content
+    // The sheet structure: Column A is "Label", Columns B, C, D, etc. are "Content"
+    // Each row represents one item with a label and multiple content fields
     
     const result = {
-      next_meeting: {
-        date: '',
-        time: '',
-        location: '',
-        description: ''
-      },
-      newsletter: {
-        title: '',
-        url: ''
-      },
-      volunteer_asks: [],
-      partner_items: []
+      items: []
     };
     
-    // Process rows - column A is label, column B is content
-    const labelCol = headers[0] || '';
-    const contentCol = headers[1] || '';
+    // Column A is the label column
+    const labelCol = headers[0] || 'Label';
     
-    rows.forEach((row, index) => {
+    // Process each row
+    rows.forEach((row) => {
       const label = (row[labelCol] || '').trim();
-      const labelLower = label.toLowerCase();
-      const content = (row[contentCol] || '').trim();
       
-      if (labelLower.includes('next meeting') || (labelLower.includes('meeting') && !labelLower.includes('volunteer'))) {
-        result.next_meeting.description = content;
-        // Check for additional columns (date, time, location)
-        if (headers[2]) result.next_meeting.date = (row[headers[2]] || '').trim();
-        if (headers[3]) result.next_meeting.time = (row[headers[3]] || '').trim();
-        if (headers[4]) result.next_meeting.location = (row[headers[4]] || '').trim();
-      } else if (labelLower.includes('newsletter')) {
-        result.newsletter.title = content;
-        // Check for URL column
-        if (headers[2]) result.newsletter.url = (row[headers[2]] || '').trim();
-      } else if (labelLower.includes('volunteer')) {
-        const volunteerItem = {
-          title: content,
-          description: headers[2] ? (row[headers[2]] || '').trim() : '',
-          url: headers[3] ? (row[headers[3]] || '').trim() : ''
-        };
-        if (volunteerItem.title || volunteerItem.description) {
-          result.volunteer_asks.push(volunteerItem);
+      // Skip rows without a label
+      if (!label) return;
+      
+      // Get all content columns (B, C, D, etc.) - everything after the label column
+      const content = [];
+      for (let i = 1; i < headers.length; i++) {
+        const contentValue = (row[headers[i]] || '').trim();
+        if (contentValue) {
+          content.push(contentValue);
         }
-      } else if (labelLower.includes('partner')) {
-        const partnerItem = {
-          title: content,
-          description: headers[2] ? (row[headers[2]] || '').trim() : '',
-          url: headers[3] ? (row[headers[3]] || '').trim() : ''
-        };
-        if (partnerItem.title || partnerItem.description) {
-          result.partner_items.push(partnerItem);
-        }
+      }
+      
+      // Only add items that have at least a label
+      if (label) {
+        result.items.push({
+          label: label,
+          content: content
+        });
       }
     });
-    
-    // If structure doesn't match expected format, try direct row access
-    // Row indices are 0-based, but we skip header, so:
-    // Row 0 (first data row) = Announcements
-    // Row 1 = Next Meeting
-    // Row 2 = Newsletter
-    // Row 3 = Volunteer Asks
-    // Row 4 = Partner Items
-    if (rows.length > 0 && !result.next_meeting.description && rows.length >= 2) {
-      // Try index-based access
-      if (rows[1] && rows[1][contentCol]) {
-        result.next_meeting.description = rows[1][contentCol] || '';
-      }
-      if (rows.length >= 3 && rows[2] && rows[2][contentCol]) {
-        result.newsletter.title = rows[2][contentCol] || '';
-      }
-    }
     
     console.log('Homepage feed fetched successfully');
     res.json(result);
@@ -214,5 +234,6 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   console.log(`Central sheet ID: ${CENTRAL_SHEET_ID}`);
+  console.log(`To change the sheet, update CENTRAL_SHEET_ID in server.js or set CENTRAL_SHEET_ID environment variable`);
 });
 

@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>Altagether NC Dashboard Prototype</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="resources/images/favicon.ico" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@800&display=swap" rel="stylesheet">
@@ -83,9 +84,10 @@
     }
 
     .header-left {
-      font-size: 1.2rem;
+      font-size: 1.8rem;
       letter-spacing: 0.5px;
       text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      font-weight: 800;
     }
 
     .header-right {
@@ -132,6 +134,24 @@
       overflow-y: auto;
       overflow-x: hidden;
       backdrop-filter: blur(10px);
+      transition: filter 0.3s ease;
+    }
+
+    .left-nav.disabled {
+      filter: blur(4px);
+      opacity: 0.6;
+    }
+
+    .left-nav.disabled .nav-item[data-view]:not([data-view="home"]) {
+      pointer-events: none;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .left-nav.disabled .nav-section-bottom {
+      pointer-events: auto;
+      filter: none;
+      opacity: 1;
     }
 
     .nav-section {
@@ -148,6 +168,7 @@
       backdrop-filter: blur(5px);
     }
 
+
     .nav-item {
       display: block;
       width: 100%;
@@ -162,6 +183,11 @@
       letter-spacing: 0.3px;
       position: relative;
       overflow: hidden;
+    }
+
+    .nav-item:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
     }
 
     .nav-item::before {
@@ -202,21 +228,40 @@
     .sheet-link-section {
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 16px;
+      padding: 0;
     }
 
-    .sheet-link-section label {
-      font-size: 0.9rem;
+    .sheet-link-section label,
+    .sheet-link-section .sheet-link-label {
+      font-size: 0.85rem;
       color: var(--primary-dark);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
       letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sheet-link-external-icon {
+      width: 14px;
+      height: 14px;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .sheet-link-external-icon:hover {
+      opacity: 0.8;
     }
 
     .nav-sheet-input {
       width: 100%;
-      padding: 10px 12px;
+      padding: 8px 10px;
+      margin-bottom: 4px;
       border: 2px solid rgba(96, 108, 56, 0.3);
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 0.85rem;
       background: rgba(255, 255, 255, 0.8);
       transition: all 0.3s ease;
@@ -231,13 +276,14 @@
     }
 
     .nav-load-btn {
-      padding: 10px 20px;
+      padding: 8px 16px;
+      margin-top: 12px;
       background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
       color: var(--light-cream);
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       cursor: pointer;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 4px 8px rgba(188, 108, 37, 0.3), 0 2px 4px rgba(188, 108, 37, 0.2);
       letter-spacing: 0.5px;
@@ -421,39 +467,11 @@
       margin: 0 auto;
     }
 
-    .home-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 32px;
-      padding-bottom: 24px;
-      border-bottom: 3px solid var(--primary);
-    }
-
-    .btn-open-map {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-      color: var(--light-cream);
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-family: 'Alegreya', serif;
-      font-weight: 800;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(40, 54, 24, 0.2);
-    }
-
-    .btn-open-map:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(40, 54, 24, 0.3);
-    }
-
     .home-panels-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 24px;
-      margin-bottom: 24px;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
     .home-panel-wide {
@@ -462,7 +480,7 @@
 
     .home-panel {
       background: rgba(255, 255, 255, 0.95);
-      border-radius: 12px;
+      border-radius: 8px;
       box-shadow: 0 4px 12px rgba(40, 54, 24, 0.15), 0 2px 4px rgba(40, 54, 24, 0.1);
       overflow: hidden;
       backdrop-filter: blur(10px);
@@ -472,7 +490,7 @@
     .home-panel-header {
       background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
       color: var(--light-cream);
-      padding: 20px 24px;
+      padding: 16px 20px;
       border-bottom: 2px solid rgba(255, 255, 255, 0.2);
     }
 
@@ -485,8 +503,24 @@
     }
 
     .home-panel-content {
-      padding: 24px;
+      padding: 16px;
       color: var(--text);
+    }
+
+    .home-panel-map {
+      min-height: 300px;
+    }
+
+    .home-map-container {
+      padding: 0;
+      height: 300px;
+      position: relative;
+    }
+
+    .home-map-container #homeMap {
+      width: 100%;
+      height: 100%;
+      border-radius: 0 0 12px 12px;
     }
 
     .stat-item {
@@ -769,17 +803,17 @@
     .charts-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 28px;
-      margin-top: 24px;
+      gap: 16px;
+      margin-top: 16px;
     }
 
     .chart-container {
       position: relative;
       height: 300px;
       background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 250, 224, 0.9) 100%);
-      border-radius: 12px;
-      padding: 20px;
-      padding-bottom: 50px;
+      border-radius: 8px;
+      padding: 16px;
+      padding-bottom: 40px;
       box-shadow: 0 4px 12px rgba(40, 54, 24, 0.15), 0 2px 4px rgba(40, 54, 24, 0.1);
       backdrop-filter: blur(10px);
       border: 2px solid rgba(96, 108, 56, 0.2);
@@ -798,6 +832,43 @@
       margin-bottom: 16px;
       text-align: center;
       letter-spacing: 0.5px;
+    }
+
+    .zone-overview-charts {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      border-top: 1px solid rgba(96, 108, 56, 0.2);
+      margin-top: 16px;
+    }
+
+    .chart-container-small {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      height: 220px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(254, 250, 224, 0.9) 100%);
+      border-radius: 8px;
+      padding: 12px;
+      padding-bottom: 60px;
+      box-shadow: 0 2px 8px rgba(40, 54, 24, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(96, 108, 56, 0.15);
+    }
+
+    .chart-container-small .chart-title {
+      font-size: 0.85rem;
+      margin-bottom: 6px;
+    }
+    
+    .chart-container-small canvas {
+      max-height: 140px !important;
+    }
+
+    .zone-overview-footer {
+      padding: 12px 16px;
+      border-top: 1px solid rgba(96, 108, 56, 0.15);
+      margin-top: 0;
     }
 
     .zone-notes-card {
@@ -1312,6 +1383,28 @@
       font-size: 0.9rem;
     }
 
+    .home-signin-prompt {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10000;
+      background: var(--light-cream);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 500px;
+      box-shadow: 0 8px 32px rgba(40, 54, 24, 0.3), 0 4px 16px rgba(40, 54, 24, 0.2);
+      border: 3px solid var(--primary);
+      text-align: center;
+    }
+
+    .home-signin-content p {
+      margin: 0 0 20px 0;
+      color: var(--text);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
     .editable-field {
       background: rgba(255, 255, 255, 0.9);
       border: 1px solid var(--mint);
@@ -1484,6 +1577,185 @@
       .main { flex-direction: column; }
       .bottom-row { flex-direction: column; }
     }
+
+    /* Welcome Message Overlay */
+    .welcome-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10001;
+      backdrop-filter: blur(4px);
+      pointer-events: auto;
+    }
+
+    .welcome-message {
+      background: var(--light-cream);
+      border-radius: 16px;
+      padding: 40px;
+      max-width: 600px;
+      box-shadow: 0 8px 32px rgba(40, 54, 24, 0.3), 0 4px 16px rgba(40, 54, 24, 0.2);
+      border: 3px solid var(--primary);
+      text-align: center;
+    }
+
+    .welcome-message h2 {
+      color: var(--primary-dark);
+      font-size: 2rem;
+      margin: 0 0 16px 0;
+      font-family: 'Alegreya', serif;
+      font-weight: 800;
+    }
+
+    .welcome-message > p {
+      color: var(--text);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      margin: 0 0 24px 0;
+      text-align: center;
+    }
+
+    .welcome-input-group {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .welcome-sheet-input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid rgba(96, 108, 56, 0.3);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .welcome-sheet-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(255, 255, 255, 1);
+      box-shadow: 0 4px 8px rgba(96, 108, 56, 0.2), 0 0 0 3px rgba(96, 108, 56, 0.1);
+    }
+
+    .welcome-load-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: var(--light-cream);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 8px rgba(188, 108, 37, 0.3), 0 2px 4px rgba(188, 108, 37, 0.2);
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .welcome-load-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(188, 108, 37, 0.4), 0 4px 6px rgba(188, 108, 37, 0.3);
+    }
+
+    .welcome-load-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(188, 108, 37, 0.3);
+    }
+
+    .welcome-help-link {
+      text-align: center;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(96, 108, 56, 0.2);
+    }
+
+    .welcome-help-link a {
+      color: var(--primary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s ease;
+    }
+
+    .welcome-help-link a:hover {
+      color: var(--primary-dark);
+      text-decoration: underline;
+    }
+
+    .welcome-step {
+      text-align: left;
+      margin-bottom: 32px;
+      padding: 24px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 12px;
+      border: 2px solid rgba(96, 108, 56, 0.2);
+    }
+
+    .welcome-step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .welcome-step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--light-cream);
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .welcome-step h3 {
+      margin: 0;
+      font-size: 1.3rem;
+      color: var(--primary-dark);
+      font-family: 'Alegreya', serif;
+      font-weight: 800;
+    }
+
+    .welcome-step-description {
+      color: var(--text-light);
+      font-size: 0.95rem;
+      margin: 0 0 16px 0;
+      line-height: 1.5;
+    }
+
+    .welcome-signin-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .welcome-step-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--primary);
+      font-weight: 600;
+      margin-top: 12px;
+      padding: 8px 12px;
+      background: rgba(96, 108, 56, 0.1);
+      border-radius: 6px;
+    }
+
+    .welcome-checkmark {
+      color: var(--primary);
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
   </style>
 </head>
 
@@ -1511,14 +1783,13 @@
         <button class="nav-item active" data-view="home" id="navHome">Home</button>
         <button class="nav-item" data-view="map" id="navMap">Map</button>
         <button class="nav-item" data-view="people" id="navPeople">Addresses & People</button>
-        <button class="nav-item" data-view="progress" id="navProgress">Zone Overview</button>
         <button class="nav-item" data-view="tools" id="navTools">Tools</button>
-        <button class="nav-item" data-view="meetups" id="navMeetups">Meetups</button>
+        <button class="nav-item" data-view="meetups" id="navMeetups">Actions</button>
         <button class="nav-item" data-view="help" id="navHelp">Help</button>
       </div>
       <div class="nav-section nav-section-bottom">
         <div class="sheet-link-section">
-          <label>Link your zone spreadsheet</label>
+          <label class="sheet-link-label" id="sheetLinkLabel">Link your zone spreadsheet</label>
           <input id="sheetUrlInput" class="nav-sheet-input" placeholder="Paste Google Sheet URL" />
           <button class="nav-load-btn" id="loadSheetBtn">Load</button>
         </div>
@@ -1563,40 +1834,132 @@
     <!-- Content Views -->
     <!-- Home Dashboard View -->
     <div class="content-view" id="homeView" style="display: none;">
-      <div class="home-dashboard">
-        <div class="home-header">
-          <h1 style="margin: 0; color: var(--primary-dark); font-size: 2.5rem; letter-spacing: 0.5px;">Zone Dashboard</h1>
-          <button class="btn-open-map" id="openMapBtn">🗺️ Open Map</button>
+      <!-- Welcome Message Overlay (shown when spreadsheet not linked) -->
+      <div class="welcome-overlay" id="welcomeOverlay" style="display: none;">
+        <div class="welcome-message">
+          <h2>Welcome to the Altagether Zone Dashboard</h2>
+          <p>Get started in two simple steps:</p>
+          
+          <!-- Step 1: Sign In -->
+          <div class="welcome-step" id="welcomeStep1">
+            <div class="welcome-step-header">
+              <span class="welcome-step-number">1</span>
+              <h3>Sign in with Google</h3>
+            </div>
+            <p class="welcome-step-description">Sign in to access and edit your zone spreadsheet data.</p>
+            <button class="btn-signin welcome-signin-btn" id="welcomeSignInBtn">
+              <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#fff" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill-rule="evenodd"/><path fill="#fff" d="M9 18c2.43 0 4.467-.806 5.96-2.184l-2.908-2.258c-.806.54-1.837.86-3.052.86-2.347 0-4.33-1.584-5.04-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill-rule="evenodd"/><path fill="#fff" d="M3.96 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.348 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.003-2.332z" fill-rule="evenodd"/><path fill="#fff" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.96 7.293C4.67 5.163 6.653 3.58 9 3.58z" fill-rule="evenodd"/></svg>
+              Sign in with Google
+            </button>
+            <div class="welcome-step-status" id="welcomeStep1Status" style="display: none;">
+              <span class="welcome-checkmark">✓</span> Signed in
+            </div>
+          </div>
+
+          <!-- Step 2: Link Spreadsheet -->
+          <div class="welcome-step" id="welcomeStep2" style="display: none;">
+            <div class="welcome-step-header">
+              <span class="welcome-step-number">2</span>
+              <h3>Link your zone spreadsheet</h3>
+            </div>
+            <p class="welcome-step-description">Paste the web address to your Google Sheets spreadsheet below.</p>
+            <div class="welcome-input-group">
+              <input id="welcomeSheetUrlInput" class="welcome-sheet-input" placeholder="Paste Google Sheet URL" />
+              <button class="welcome-load-btn" id="welcomeLoadBtn">Load</button>
+            </div>
+          </div>
+          
+          <div class="welcome-help-link">
+            <a href="#" id="getHelpBtn">Get Help</a>
+          </div>
         </div>
-        
+      </div>
+      
+      <!-- Sign-in prompt for Home view (shown when spreadsheet linked but not signed in) -->
+      <div id="homeSigninPrompt" style="display: none;" class="home-signin-prompt">
+        <div class="home-signin-content">
+          <p><strong>Sign in to view data</strong><br>Click below to sign in with Google and enable viewing and editing</p>
+          <button class="btn-signin" id="homeSignInBtn">
+            <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#fff" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill-rule="evenodd"/><path fill="#fff" d="M9 18c2.43 0 4.467-.806 5.96-2.184l-2.908-2.258c-.806.54-1.837.86-3.052.86-2.347 0-4.33-1.584-5.04-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill-rule="evenodd"/><path fill="#fff" d="M3.96 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.348 6.175 0 7.55 0 9s.348 2.825.957 4.039l3.003-2.332z" fill-rule="evenodd"/><path fill="#fff" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.96 7.293C4.67 5.163 6.653 3.58 9 3.58z" fill-rule="evenodd"/></svg>
+            Sign in with Google
+          </button>
+        </div>
+      </div>
+      
+      <div class="home-dashboard">
         <div class="home-panels-grid">
-          <!-- Panel A: Zone Snapshot -->
+          <!-- Panel A: Zone Overview -->
           <div class="home-panel">
             <div class="home-panel-header">
-              <h2>Zone Snapshot</h2>
+              <h2>Zone Overview</h2>
             </div>
             <div class="home-panel-content" id="zoneSnapshotContent">
               <div class="loading">Loading zone data...</div>
             </div>
+            <div class="zone-overview-charts" id="zoneOverviewCharts" style="display: none;">
+              <div class="chart-container-small">
+                <div class="chart-title">Addresses Contacted</div>
+                <canvas id="zoneOverviewAddressesChart"></canvas>
+              </div>
+              <div class="chart-container-small">
+                <div class="chart-title">Damage Status</div>
+                <canvas id="zoneOverviewDamageChart"></canvas>
+              </div>
+            </div>
+            <div class="zone-overview-footer" id="zoneOverviewFooter" style="display: none;">
+              <div class="stat-item" style="border-bottom: none; padding: 8px 0;">
+                <span class="stat-label">Last updated</span>
+                <span class="stat-value" style="font-size: 0.9rem;">-</span>
+              </div>
+            </div>
           </div>
           
-          <!-- Panel B: Rebuild Progress Snapshot -->
+          <!-- Panel B: From Altagether -->
+          <div class="home-panel">
+            <div class="home-panel-header">
+              <h2>From Altagether</h2>
+            </div>
+            <div class="home-panel-content" id="altagetherContent">
+              <div class="loading">Loading announcements...</div>
+            </div>
+          </div>
+          
+          <!-- Panel C: Zone Map -->
+          <div class="home-panel home-panel-map">
+            <div class="home-panel-header">
+              <h2>Zone Map</h2>
+            </div>
+            <div class="home-panel-content home-map-container" id="homeMapContainer">
+              <div id="homeMap" style="width: 100%; height: 100%;"></div>
+            </div>
+          </div>
+          
+          <!-- Panel D: Charts Grid -->
+          <div class="home-panel home-panel-wide">
+            <div class="home-panel-header">
+              <h2>Zone Statistics</h2>
+            </div>
+            <div class="home-panel-content">
+              <div class="charts-grid" id="homeChartsGrid">
+                <div class="chart-container">
+                  <div class="chart-title">People Contacted</div>
+                  <canvas id="peopleContactChart"></canvas>
+                </div>
+                <div class="chart-container">
+                  <div class="chart-title">Household Status</div>
+                  <canvas id="householdStatusChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Panel E: Rebuild Progress Snapshot -->
           <div class="home-panel">
             <div class="home-panel-header">
               <h2>Rebuild Progress Snapshot</h2>
             </div>
             <div class="home-panel-content" id="rebuildProgressContent">
               <div class="loading">Loading rebuild data...</div>
-            </div>
-          </div>
-          
-          <!-- Panel C: From Altagether -->
-          <div class="home-panel home-panel-wide">
-            <div class="home-panel-header">
-              <h2>From Altagether</h2>
-            </div>
-            <div class="home-panel-content" id="altagetherContent">
-              <div class="loading">Loading announcements...</div>
             </div>
           </div>
         </div>
@@ -1619,33 +1982,10 @@
       <p>Tools menu coming soon...</p>
     </div>
 
-    <!-- Meetups View -->
+    <!-- Actions View -->
     <div class="content-view" id="meetupsView" style="display: none;">
-      <h2 style="margin-top: 0; color: var(--primary-dark); font-size: 2rem; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(40, 54, 24, 0.1);">Meetups</h2>
-      <p>Meetups feature coming soon...</p>
-    </div>
-
-    <!-- Zone Overview View -->
-    <div class="content-view" id="progressView" style="display: none;">
-      <h2 style="margin-top: 0; color: var(--primary-dark); font-size: 2rem; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(40, 54, 24, 0.1);">Zone Overview</h2>
-      <div class="charts-grid" id="chartsGrid">
-        <div class="chart-container">
-          <div class="chart-title">People Contacted</div>
-          <canvas id="peopleContactChart"></canvas>
-        </div>
-        <div class="chart-container">
-          <div class="chart-title">Households Contacted</div>
-          <canvas id="householdsContactChart"></canvas>
-        </div>
-        <div class="chart-container">
-          <div class="chart-title">Damage Status</div>
-          <canvas id="damageChart"></canvas>
-        </div>
-        <div class="chart-container">
-          <div class="chart-title">Household Status</div>
-          <canvas id="householdStatusChart"></canvas>
-        </div>
-      </div>
+      <h2 style="margin-top: 0; color: var(--primary-dark); font-size: 2rem; letter-spacing: 0.5px; text-shadow: 0 2px 4px rgba(40, 54, 24, 0.1);">Actions</h2>
+      <p>Actions feature coming soon...</p>
     </div>
 
     <!-- Help View -->
@@ -1680,14 +2020,20 @@
     let tableSortColumn = null; // Current sort column
     let tableSortDirection = 'asc'; // Sort direction: 'asc' or 'desc'
     let zoneMap = null; // Leaflet map instance
+    let homeMap = null; // Homepage map instance
     let addressMarkers = []; // Array of address markers
+    let homeMapMarkers = []; // Array of markers for homepage map
     let kmlLayer = null; // KML boundary layer
+    let homeKmlLayer = null; // KML boundary layer for homepage
     let currentTileLayer = null; // Current map tile layer
+    let homeTileLayer = null; // Tile layer for homepage
     let isSatelliteMode = false; // Track satellite mode state
+    let isHomeSatelliteMode = false; // Track satellite mode for homepage
     let zoneNotes = ''; // Zone-level notes
     let zoneKmlUrl = ''; // Zone KML URL from metadata
     let metadataSheetId = null; // Sheet ID for metadata sheet
     let autoSaveTimer = null; // Timer for debounced auto-save
+    let currentZoneName = ''; // Current zone name from spreadsheet
 
     // Load OAuth token from localStorage
     const savedToken = localStorage.getItem('googleOAuthToken');
@@ -1712,11 +2058,78 @@
       }
     }
 
+    // Initialize sheet link label, welcome message, header title, and navigation state
+    updateSheetLinkLabel();
+    updateWelcomeMessage();
+    updateHeaderTitle();
+    updateNavigationState();
+
+    // Get Help link handler
+    const getHelpBtn = document.getElementById('getHelpBtn');
+    if (getHelpBtn) {
+      getHelpBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        // Open help page in new window
+        window.open('help.html', '_blank', 'noopener,noreferrer');
+      });
+    }
+
+    // Welcome popup load button handler
+    const welcomeLoadBtn = document.getElementById('welcomeLoadBtn');
+    const welcomeSheetUrlInput = document.getElementById('welcomeSheetUrlInput');
+    if (welcomeLoadBtn && welcomeSheetUrlInput) {
+      welcomeLoadBtn.addEventListener('click', () => {
+        // Validate sign-in first
+        if (!accessToken) {
+          alert('Please sign in with Google first before loading your spreadsheet.');
+          // Show step 1 if hidden
+          const welcomeStep1 = document.getElementById('welcomeStep1');
+          if (welcomeStep1) {
+            welcomeStep1.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          return;
+        }
+
+        let url = welcomeSheetUrlInput.value.trim();
+        if (!url) {
+          alert('Please enter a Google Sheets URL.');
+          return;
+        }
+
+        if (url.includes("/view")) {
+          url = url.replace("/view", "/edit");
+        }
+
+        // Update main input field
+        if (input) {
+          input.value = url;
+        }
+
+        currentSheetUrl = url;
+        // Save to localStorage
+        localStorage.setItem('savedSheetUrl', url);
+        
+        // Update UI
+        updateSheetLinkLabel();
+        updateWelcomeMessage();
+        updateNavigationState();
+        
+        // Load the address data
+        loadAddressData(url);
+      });
+
+      // Also allow Enter key to trigger load
+      welcomeSheetUrlInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          welcomeLoadBtn.click();
+        }
+      });
+    }
+
     // Initialize Google API
     function initGoogleAPI() {
       gapi.load('client', () => {
         gapi.client.init({
-          apiKey: savedApiKey || '',
           discoveryDocs: ['https://sheets.googleapis.com/$discovery/rest?version=v4'],
         }).then(() => {
           console.log('Google API initialized');
@@ -1784,6 +2197,7 @@
               // Fallback: refresh current address if one is selected
               loadAddressData(currentSheetUrl);
             }
+            
           },
         });
         tokenClient.requestAccessToken({ prompt: 'consent' });
@@ -1806,17 +2220,172 @@
 
     // Update sign-in UI
     function updateSignInUI() {
+      const homeSigninPrompt = document.getElementById('homeSigninPrompt');
+      
       if (accessToken) {
         signinPrompt.style.display = 'none';
+        if (homeSigninPrompt) homeSigninPrompt.style.display = 'none';
         // Could add a sign-out button here if needed
       } else {
         // Always show sign-in prompt when not signed in
         signinPrompt.style.display = 'block';
+        // Show home sign-in prompt if on home view and spreadsheet is linked
+        if (homeSigninPrompt && currentView === 'home' && currentSheetUrl) {
+          homeSigninPrompt.style.display = 'block';
+        } else if (homeSigninPrompt) {
+          homeSigninPrompt.style.display = 'none';
+        }
+      }
+      
+      // Update welcome message to reflect sign-in state
+      updateWelcomeMessage();
+    }
+
+    // Update sheet link label based on link status
+    function updateSheetLinkLabel() {
+      const label = document.getElementById('sheetLinkLabel');
+      if (!label) return;
+      
+      if (currentSheetUrl) {
+        // Spreadsheet is linked - show "Change spreadsheet" with subtle external link icon
+        label.innerHTML = `Change spreadsheet <svg class="sheet-link-external-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" title="Open spreadsheet"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>`;
+        // Add click handler to the icon
+        const icon = label.querySelector('.sheet-link-external-icon');
+        if (icon) {
+          icon.style.cursor = 'pointer';
+          icon.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            window.open(currentSheetUrl, '_blank', 'noopener,noreferrer');
+          });
+        }
+      } else {
+        // No spreadsheet linked
+        label.textContent = 'Link your zone spreadsheet';
+      }
+    }
+
+    // Update welcome message visibility and step progression
+    function updateWelcomeMessage() {
+      const welcomeOverlay = document.getElementById('welcomeOverlay');
+      const welcomeStep1 = document.getElementById('welcomeStep1');
+      const welcomeStep2 = document.getElementById('welcomeStep2');
+      const welcomeStep1Status = document.getElementById('welcomeStep1Status');
+      const welcomeSignInBtn = document.getElementById('welcomeSignInBtn');
+      
+      if (!welcomeOverlay) return;
+      
+      // Show welcome message only on home page when no spreadsheet is linked
+      if (currentView === 'home' && !currentSheetUrl) {
+        welcomeOverlay.style.display = 'flex';
+        
+        // Update step visibility based on sign-in state
+        if (accessToken) {
+          // User is signed in - show step 2, hide step 1 button
+          if (welcomeStep1) {
+            const btnContainer = welcomeSignInBtn?.parentElement;
+            if (btnContainer && welcomeSignInBtn) {
+              welcomeSignInBtn.style.display = 'none';
+            }
+            if (welcomeStep1Status) {
+              welcomeStep1Status.style.display = 'flex';
+            }
+          }
+          if (welcomeStep2) {
+            welcomeStep2.style.display = 'block';
+          }
+        } else {
+          // User not signed in - show step 1, hide step 2
+          if (welcomeStep1) {
+            const btnContainer = welcomeSignInBtn?.parentElement;
+            if (btnContainer && welcomeSignInBtn) {
+              welcomeSignInBtn.style.display = 'flex';
+            }
+            if (welcomeStep1Status) {
+              welcomeStep1Status.style.display = 'none';
+            }
+          }
+          if (welcomeStep2) {
+            welcomeStep2.style.display = 'none';
+          }
+        }
+      } else {
+        welcomeOverlay.style.display = 'none';
+      }
+    }
+
+    // Update header title based on zone name and spreadsheet link status
+    function updateHeaderTitle() {
+      const headerLeft = document.getElementById('headerLeft');
+      if (!headerLeft) return;
+      
+      if (currentSheetUrl && currentZoneName) {
+        // Strip "Zone" from the beginning if it's already there
+        let zoneName = currentZoneName.trim();
+        if (zoneName.toLowerCase().startsWith('zone ')) {
+          zoneName = zoneName.substring(5).trim();
+        }
+        headerLeft.textContent = `Zone ${zoneName} • Altagether Dashboard`;
+      } else {
+        headerLeft.textContent = 'Altagether Dashboard';
+      }
+    }
+
+    // Update navigation disabled state
+    function updateNavigationState() {
+      const leftNav = document.querySelector('.left-nav');
+      const navItems = document.querySelectorAll('.nav-item[data-view]');
+      const sheetLinkSection = document.querySelector('.sheet-link-section');
+      
+      if (!currentSheetUrl) {
+        // No spreadsheet linked - disable all navigation except Home
+        if (leftNav) {
+          leftNav.classList.add('disabled');
+        }
+        // Hide the sheet link section in left nav when welcome overlay is shown
+        if (sheetLinkSection) {
+          sheetLinkSection.style.display = 'none';
+        }
+        navItems.forEach(item => {
+          const viewName = item.getAttribute('data-view');
+          if (viewName !== 'home') {
+            item.disabled = true;
+            item.style.pointerEvents = 'none';
+          } else {
+            item.disabled = false;
+            item.style.pointerEvents = 'auto';
+          }
+        });
+      } else {
+        // Spreadsheet linked - enable all navigation
+        if (leftNav) {
+          leftNav.classList.remove('disabled');
+        }
+        // Show the sheet link section for changing spreadsheet
+        if (sheetLinkSection) {
+          sheetLinkSection.style.display = 'block';
+        }
+        navItems.forEach(item => {
+          item.disabled = false;
+          item.style.pointerEvents = 'auto';
+        });
       }
     }
 
     // Sign in button handler
     signInBtn.addEventListener('click', signIn);
+
+    // Home sign-in button handler (uses same signIn function)
+    const homeSignInBtn = document.getElementById('homeSignInBtn');
+    if (homeSignInBtn) {
+      homeSignInBtn.addEventListener('click', signIn);
+    }
+
+    // Welcome sign-in button handler (uses same signIn function)
+    const welcomeSignInBtn = document.getElementById('welcomeSignInBtn');
+    if (welcomeSignInBtn) {
+      welcomeSignInBtn.addEventListener('click', signIn);
+    }
 
     // Extract sheet ID from any Google Sheets URL format
     function extractSheetId(sheetUrl) {
@@ -2186,6 +2755,11 @@
           currentSheetId = sheetInfo.sheetId;
         }
         
+        // Update sheet link label after successful load
+        updateSheetLinkLabel();
+        updateHeaderTitle();
+        updateNavigationState();
+        
         // Update sign-in UI
         updateSignInUI();
         
@@ -2196,17 +2770,12 @@
         
         // Extract zone name from ZoneName column if available
         const zoneNameCol = headers.find(h => h.toLowerCase() === 'zonename' || h.toLowerCase() === 'zone name');
-        const headerLeft = document.getElementById('headerLeft');
         if (zoneNameCol && data.length > 0 && data[0][zoneNameCol]) {
-          const zoneName = data[0][zoneNameCol].trim();
-          if (zoneName && headerLeft) {
-            headerLeft.textContent = `${zoneName} • Altagether Dashboard`;
-          }
+          currentZoneName = data[0][zoneNameCol].trim();
         } else {
-          if (headerLeft) {
-            headerLeft.textContent = 'Zone XX • Altagether Dashboard';
-          }
+          currentZoneName = '';
         }
+        updateHeaderTitle();
         
         // If an address was selected, restore that view; otherwise show list
         if (selectedAddress && addressMap.has(selectedAddress)) {
@@ -2231,8 +2800,24 @@
         updateZoneProgressCharts();
         
         // Initialize or update map with addresses
+        // Initialize map but don't update markers yet if map view isn't active
         initializeMap();
-        updateMapMarkers();
+        
+        // Only update map markers if we're currently on the map view
+        if (currentView === 'map') {
+          // Wait for map to be properly sized
+          setTimeout(() => {
+            if (zoneMap) {
+              const mapDiv = document.getElementById('zoneMap');
+              if (mapDiv && mapDiv.offsetParent !== null) {
+                zoneMap.invalidateSize();
+                setTimeout(() => {
+                  updateMapMarkers();
+                }, 100);
+              }
+            }
+          }, 200);
+        }
         
         // Switch to home view and update dashboard
         if (currentView === 'map' || !currentView) {
@@ -2379,7 +2964,7 @@
       });
       
       // Always include default values (even if not in data yet)
-      const defaultStatusValues = ['Planning to Rebuild', 'Selling', 'Renter/Moved', 'Staying'];
+      const defaultStatusValues = ['Rebuilding', 'Selling', 'Renter/Moved', 'Staying'];
       defaultStatusValues.forEach(val => {
         // Check if this value exists (case-insensitive)
         const existing = Array.from(statuses).find(s => s.toLowerCase() === val.toLowerCase());
@@ -2499,7 +3084,14 @@
       `;
 
       filterBarContent.innerHTML = html;
-      filterBar.style.display = 'block';
+      
+      // Only show filter bar if we're on map or people view
+      const shouldShowFilters = (currentView === 'people' || currentView === 'map');
+      if (shouldShowFilters) {
+        filterBar.style.display = 'block';
+      } else {
+        filterBar.style.display = 'none';
+      }
 
       // Add event handlers (remove old ones first to avoid duplicates)
       const oldStreetFilter = document.getElementById('persistentStreetFilter');
@@ -3026,7 +3618,7 @@
       
       // Default status values (in case not all are found in data)
       const defaultDamageValues = ['Total Loss', 'Partial Loss', 'Standing'];
-      const defaultStatusValues = ['Planning to Rebuild', 'Selling', 'Renter/Moved', 'Staying'];
+      const defaultStatusValues = ['Rebuilding', 'Selling', 'Renter/Moved', 'Staying'];
       
       sheetData.data.forEach(row => {
         if (damageCol && row[damageCol] !== undefined && row[damageCol] !== null) {
@@ -3303,8 +3895,17 @@
 
     // Load sheet button handler
     btn.addEventListener("click", () => {
+      // Validate sign-in first
+      if (!accessToken) {
+        alert('Please sign in with Google first before loading your spreadsheet.');
+        return;
+      }
+
       let url = input.value.trim();
-      if (!url) return;
+      if (!url) {
+        alert('Please enter a Google Sheets URL.');
+        return;
+      }
 
       if (url.includes("/view")) {
         url = url.replace("/view", "/edit");
@@ -3313,6 +3914,11 @@
       currentSheetUrl = url;
       // Save to localStorage
       localStorage.setItem('savedSheetUrl', url);
+      
+      // Update UI
+      updateSheetLinkLabel();
+      updateWelcomeMessage();
+      updateNavigationState();
       
       // Load the address data
       loadAddressData(url);
@@ -3323,6 +3929,13 @@
 
     // Navigation System - Single Page Navigation
     function switchView(viewName) {
+      // Prevent switching to non-home views if no spreadsheet is linked
+      if (!currentSheetUrl && viewName !== 'home') {
+        // Force back to home view
+        viewName = 'home';
+        currentView = 'home';
+      }
+      
       currentView = viewName;
       
       // Hide all content views
@@ -3369,6 +3982,22 @@
       const mapContainer = document.querySelector('.map-container');
       if (viewName === 'map') {
         if (mapContainer) mapContainer.style.display = 'block';
+        // Initialize map if not already done, and ensure it's properly sized
+        if (!zoneMap) {
+          initializeMap();
+        }
+        // Wait for container to be visible, then invalidate size and update markers
+        setTimeout(() => {
+          if (zoneMap) {
+            zoneMap.invalidateSize();
+            // Update markers after map is properly sized
+            setTimeout(() => {
+              if (sheetData && sheetData.addressMap) {
+                updateMapMarkers();
+              }
+            }, 100);
+          }
+        }, 150);
       } else {
         if (mapContainer) mapContainer.style.display = 'none';
       }
@@ -3398,6 +4027,12 @@
         }
       }
       
+      // Update welcome message visibility
+      updateWelcomeMessage();
+      
+      // Update sign-in UI when switching views
+      updateSignInUI();
+      
       // Update content based on view
       if (viewName === 'home' && sheetData && sheetData.addressMap) {
         updateHomeDashboard();
@@ -3412,7 +4047,13 @@
     // Set up navigation event listeners
     document.querySelectorAll('.nav-item[data-view]').forEach(item => {
       item.addEventListener('click', (e) => {
+        // Prevent navigation if no spreadsheet is linked (except Home)
         const viewName = e.target.getAttribute('data-view');
+        if (!currentSheetUrl && viewName !== 'home') {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
         switchView(viewName);
       });
     });
@@ -3422,12 +4063,6 @@
     switchView('home');
     
     // Set up Open Map button
-    const openMapBtn = document.getElementById('openMapBtn');
-    if (openMapBtn) {
-      openMapBtn.addEventListener('click', () => {
-        switchView('map');
-      });
-    }
 
     // Convert column index to letter (A, B, C, etc.) - global helper function
     function indexToColumnLetter(index) {
@@ -3769,11 +4404,15 @@
           new SatelliteToggleControl({ position: 'topleft' }).addTo(zoneMap);
           
           // Invalidate size to ensure map renders correctly in full screen
+          // Use a longer delay and check if container is visible
           setTimeout(() => {
             if (zoneMap) {
-              zoneMap.invalidateSize();
+              const mapDiv = document.getElementById('zoneMap');
+              if (mapDiv && mapDiv.offsetParent !== null) {
+                zoneMap.invalidateSize();
+              }
             }
-          }, 100);
+          }, 300);
           
           console.log('Map initialized');
         } catch (error) {
@@ -3781,11 +4420,15 @@
         }
       } else {
         // If map already exists, invalidate size in case container changed
+        // Only invalidate if container is visible
         setTimeout(() => {
           if (zoneMap) {
-            zoneMap.invalidateSize();
+            const mapDiv = document.getElementById('zoneMap');
+            if (mapDiv && mapDiv.offsetParent !== null) {
+              zoneMap.invalidateSize();
+            }
           }
-        }, 100);
+        }, 300);
       }
       
       // Load KML if URL is provided (commented out for now)
@@ -3794,6 +4437,186 @@
       // if (kmlUrl) {
       //   loadKMLBoundary(kmlUrl);
       // }
+    }
+
+    // Initialize homepage map
+    function initializeHomeMap() {
+      const mapDiv = document.getElementById('homeMap');
+      if (!mapDiv) {
+        console.log('Home map div not found');
+        return;
+      }
+      
+      if (!homeMap) {
+        try {
+          // Default center (Altadena, CA - adjust as needed)
+          homeMap = L.map('homeMap').setView([34.19, -118.15], 13);
+          
+          // Add OpenStreetMap tiles (default)
+          homeTileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+          }).addTo(homeMap);
+          
+          // Invalidate size to ensure map renders correctly
+          setTimeout(() => {
+            if (homeMap) {
+              homeMap.invalidateSize();
+            }
+          }, 100);
+          
+          console.log('Home map initialized');
+        } catch (error) {
+          console.error('Error initializing home map:', error);
+        }
+      } else {
+        // If map already exists, invalidate size in case container changed
+        setTimeout(() => {
+          if (homeMap) {
+            homeMap.invalidateSize();
+          }
+        }, 100);
+      }
+      
+      // Update markers on home map
+      updateHomeMapMarkers();
+      
+      // Load KML if URL is provided
+      if (zoneKmlUrl) {
+        loadHomeKMLBoundary(zoneKmlUrl);
+      }
+    }
+
+    // Update homepage map markers
+    function updateHomeMapMarkers() {
+      if (!sheetData || !sheetData.addressMap || !homeMap) {
+        return;
+      }
+      
+      // Clear existing markers
+      homeMapMarkers.forEach(marker => homeMap.removeLayer(marker));
+      homeMapMarkers = [];
+      
+      const headers = sheetData.headers;
+      const addressMap = sheetData.addressMap;
+      
+      // Find lat/lon columns
+      const latCol = headers.find(h => {
+        const lower = h.toLowerCase().trim();
+        return lower.includes('lat') || lower === 'latitude';
+      });
+      const lonCol = headers.find(h => {
+        const lower = h.toLowerCase().trim();
+        return lower.includes('lon') || lower.includes('lng') || lower === 'longitude';
+      });
+      
+      if (!latCol || !lonCol) {
+        console.log('Lat/Lon columns not found for home map');
+        return;
+      }
+      
+      // Get all addresses
+      const addresses = Array.from(addressMap.keys());
+      const bounds = [];
+      
+      addresses.forEach(address => {
+        const rows = addressMap.get(address);
+        if (!rows || rows.length === 0) return;
+        
+        const row = rows[0];
+        const latVal = row[latCol];
+        const lonVal = row[lonCol];
+        
+        if (latVal && lonVal) {
+          const lat = parseFloat(latVal);
+          const lon = parseFloat(lonVal);
+          
+          if (!isNaN(lat) && !isNaN(lon)) {
+            addHomeMapMarker(address, lat, lon, rows);
+            bounds.push([lat, lon]);
+          }
+        }
+      });
+      
+      // Fit bounds to show all markers
+      if (bounds.length > 0 && homeMap) {
+        homeMap.fitBounds(bounds, { padding: [20, 20] });
+      }
+    }
+
+    // Add marker to homepage map
+    function addHomeMapMarker(address, lat, lng, rows) {
+      if (!homeMap) return;
+      
+      const marker = L.marker([lat, lng], {
+        icon: L.icon({
+          iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png',
+          shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+          iconSize: [20, 32],
+          iconAnchor: [10, 32],
+          popupAnchor: [1, -28],
+          shadowSize: [32, 32]
+        })
+      }).addTo(homeMap);
+      
+      marker.address = address;
+      marker.bindPopup(`<strong>${address}</strong>`);
+      
+      homeMapMarkers.push(marker);
+    }
+
+    // Load KML boundary for homepage
+    async function loadHomeKMLBoundary(kmlUrl) {
+      if (!kmlUrl || !kmlUrl.trim() || !homeMap) {
+        return;
+      }
+      
+      try {
+        // Remove existing KML layer
+        if (homeKmlLayer) {
+          homeMap.removeLayer(homeKmlLayer);
+        }
+        
+        const cleanUrl = kmlUrl.replace(/^["']|["']$/g, '').trim();
+        const directUrl = convertGoogleDriveUrl(cleanUrl);
+        
+        // Use same fetch logic as main map
+        let kmlText;
+        try {
+          const response = await fetch(directUrl);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          kmlText = await response.text();
+        } catch (error) {
+          const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`;
+          const proxyResponse = await fetch(proxyUrl);
+          if (!proxyResponse.ok) throw new Error(`Proxy failed: ${proxyResponse.status}`);
+          kmlText = await proxyResponse.text();
+        }
+        
+        const parser = new DOMParser();
+        const kml = parser.parseFromString(kmlText, 'text/xml');
+        const parseError = kml.querySelector('parsererror');
+        if (parseError) throw new Error('KML parsing error');
+        
+        if (typeof toGeoJSON !== 'undefined' && toGeoJSON.kml) {
+          const geojson = toGeoJSON.kml(kml);
+          homeKmlLayer = L.geoJSON(geojson, {
+            style: {
+              color: '#214025',
+              weight: 2,
+              opacity: 0.8,
+              fillColor: '#214025',
+              fillOpacity: 0.1
+            }
+          }).addTo(homeMap);
+          
+          if (homeKmlLayer.getBounds && homeKmlLayer.getBounds().isValid()) {
+            homeMap.fitBounds(homeKmlLayer.getBounds(), { padding: [10, 10] });
+          }
+        }
+      } catch (error) {
+        console.error('Error loading KML for home map:', error);
+      }
     }
 
     // Convert Google Drive sharing URL to direct download URL
@@ -3959,8 +4782,10 @@
     function highlightSelectedMarker(address) {
       if (!zoneMap || !addressMarkers) return;
       
+      let selectedMarker = null;
       addressMarkers.forEach(marker => {
         if (marker.address === address) {
+          selectedMarker = marker;
           // Highlight selected marker with red icon
           marker.setIcon(L.icon({
             iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
@@ -3982,6 +4807,8 @@
           }));
         }
       });
+      
+      // Don't pan or zoom - just highlight the marker
     }
 
     // Update map markers based on filtered addresses
@@ -4172,9 +4999,22 @@
       }
       
       // Fit map to show all markers (if we have markers and no KML boundary)
-      if (bounds.length > 0 && !kmlLayer) {
-        zoneMap.fitBounds(bounds, { padding: [20, 20] });
-      }
+      // Wait for map to be properly sized before fitting bounds
+      setTimeout(() => {
+        if (zoneMap && bounds.length > 0 && !kmlLayer) {
+          const mapDiv = document.getElementById('zoneMap');
+          if (mapDiv && mapDiv.offsetParent !== null) {
+            try {
+              zoneMap.fitBounds(bounds, { 
+                padding: [20, 20],
+                maxZoom: 16 // Prevent zooming in too close
+              });
+            } catch (error) {
+              console.error('Error fitting bounds:', error);
+            }
+          }
+        }
+      }, 200);
     }
 
     // Satellite toggle is now handled by Leaflet control (created in initializeMap)
@@ -4509,6 +5349,8 @@
     let householdsContactChart = null;
     let damageChart = null;
     let householdStatusChart = null;
+    let zoneOverviewAddressesChart = null;
+    let zoneOverviewDamageChart = null;
 
     // Update Zone Progress Charts
     function updateZoneProgressCharts() {
@@ -4557,7 +5399,7 @@
             labels: [`Contacted (${peopleContactedPct}%)`, `Not Contacted (${peopleNotContactedPct}%)`],
             datasets: [{
               data: [peopleContacted, peopleNotContacted],
-              backgroundColor: ['#4caf50', '#ff9800'],
+              backgroundColor: ['#b4bd9b', '#bc455a'],
               borderWidth: 2,
               borderColor: '#fff'
             }]
@@ -4626,7 +5468,7 @@
             labels: [`Contacted (${householdsContactedPct}%)`, `Not Contacted (${householdsNotContactedPct}%)`],
             datasets: [{
               data: [householdsContactedCount, householdsNotContactedCount],
-              backgroundColor: ['#4caf50', '#ff9800'],
+              backgroundColor: ['#b4bd9b', '#bc455a'],
               borderWidth: 2,
               borderColor: '#fff'
             }]
@@ -4687,7 +5529,7 @@
         return `${label} (${pct}%)`;
       });
       
-      const damageColors = ['#f44336', '#ff9800', '#4caf50', '#2196f3', '#9c27b0', '#00bcd4', '#9e9e9e'];
+      const damageColors = ['#bc455a', '#fdba77', '#b4bd9b', '#81bdc3', '#f6cf98', '#ccd5c3', '#f9d6d3'];
 
       const damageCtx = document.getElementById('damageChart');
       if (damageChart) damageChart.destroy();
@@ -4761,7 +5603,7 @@
         return `${label} (${pct}%)`;
       });
       
-      const statusColors = ['#2196f3', '#4caf50', '#ff9800', '#9c27b0', '#00bcd4', '#f44336', '#9e9e9e'];
+      const statusColors = ['#b4bd9b', '#81bdc3', '#fdba77', '#f6cf98', '#bc455a', '#ccd5c3', '#f9d6d3'];
 
       const statusCtx = document.getElementById('householdStatusChart');
       if (householdStatusChart) householdStatusChart.destroy();
@@ -4810,21 +5652,34 @@
         // Show empty state
         const zoneSnapshotContent = document.getElementById('zoneSnapshotContent');
         const rebuildProgressContent = document.getElementById('rebuildProgressContent');
+        const homeMapContainer = document.getElementById('homeMapContainer');
         if (zoneSnapshotContent) {
           zoneSnapshotContent.innerHTML = '<div class="empty">Load a spreadsheet to see zone stats</div>';
         }
         if (rebuildProgressContent) {
           rebuildProgressContent.innerHTML = '<div class="empty">Load a spreadsheet to see rebuild progress</div>';
         }
+        if (homeMapContainer) {
+          homeMapContainer.innerHTML = '<div class="empty">Load a spreadsheet to see map</div>';
+        }
         return;
       }
       
       updateZoneSnapshot();
       updateRebuildProgress();
+      updateZoneProgressCharts();
+      initializeHomeMap();
       fetchAndDisplayCentralFeed();
+      
+      // Update Zone Overview charts after a short delay to ensure DOM is ready
+      setTimeout(() => {
+        if (sheetData && sheetData.addressMap) {
+          updateZoneOverviewCharts();
+        }
+      }, 100);
     }
     
-    // Panel A: Zone Snapshot
+    // Panel A: Zone Overview
     function updateZoneSnapshot() {
       if (!sheetData || !sheetData.addressMap || !sheetData.headers) {
         return;
@@ -4840,21 +5695,40 @@
       // 1. Households in your zone (count of addresses)
       const householdsCount = addressMap.size;
       
-      // 2. People in your zone (sum of "# of residents" field, fallback to 1)
+      // 2. People in your zone (count unique resident names, or use "# of residents" field per address)
       const residentsCol = headers.find(h => {
         const lower = h.toLowerCase();
         return lower.includes('# of residents') || 
                lower.includes('number of residents') ||
-               lower.includes('residents') ||
                (lower.includes('#') && lower.includes('resident'));
+      });
+      
+      const residentNameCol = headers.find(h => {
+        const lower = h.toLowerCase();
+        return lower.includes('resident name') || 
+               lower.includes('name') && !lower.includes('household') && !lower.includes('address');
       });
       
       let peopleCount = 0;
       if (residentsCol) {
-        data.forEach(row => {
+        // Use "# of residents" field - count per address, not per row
+        addressMap.forEach((rows, address) => {
+          const row = rows[0]; // Get first row for this address
           const residents = parseInt(row[residentsCol]) || 0;
           peopleCount += residents > 0 ? residents : 1;
         });
+      } else if (residentNameCol) {
+        // Count unique resident names across all addresses
+        const uniqueResidents = new Set();
+        addressMap.forEach((rows, address) => {
+          rows.forEach(row => {
+            const name = (row[residentNameCol] || '').trim();
+            if (name) {
+              uniqueResidents.add(name.toLowerCase());
+            }
+          });
+        });
+        peopleCount = uniqueResidents.size || householdsCount;
       } else {
         // Fallback: 1 person per address
         peopleCount = householdsCount;
@@ -4962,7 +5836,7 @@
       content.innerHTML = `
         <div class="stat-group">
           <div class="stat-item">
-            <span class="stat-label">Households in your zone</span>
+            <span class="stat-label">Addresses in your zone</span>
             <span class="stat-value">${householdsCount}</span>
           </div>
           <div class="stat-item">
@@ -4970,28 +5844,213 @@
             <span class="stat-value">${peopleCount}</span>
           </div>
           <div class="stat-item">
-            <span class="stat-label">Households not yet contacted</span>
+            <span class="stat-label">Addresses not yet contacted</span>
             <span class="stat-value">${uncontactedCount}</span>
           </div>
         </div>
         
-        <div class="stat-group">
-          <div class="stat-group-title">Homes by Damage Status</div>
-          ${Object.entries(damageCounts).map(([status, count]) => `
-            <div class="damage-stat-item">
-              <span class="damage-stat-label">${status}</span>
-              <span class="damage-stat-count">${count}</span>
-            </div>
-          `).join('')}
-        </div>
-        
-        <div class="stat-group">
-          <div class="stat-item">
-            <span class="stat-label">Last updated</span>
-            <span class="stat-value" style="font-size: 1rem;">${lastUpdatedText}</span>
-          </div>
-        </div>
       `;
+      
+      // Show charts container and render charts
+      const chartsContainer = document.getElementById('zoneOverviewCharts');
+      const footerContainer = document.getElementById('zoneOverviewFooter');
+      if (chartsContainer) {
+        chartsContainer.style.display = 'flex';
+        updateZoneOverviewCharts();
+      }
+      
+      // Update footer with last updated
+      if (footerContainer) {
+        footerContainer.style.display = 'block';
+        const lastUpdatedSpan = footerContainer.querySelector('.stat-value');
+        if (lastUpdatedSpan) {
+          lastUpdatedSpan.textContent = lastUpdatedText;
+        }
+      }
+    }
+    
+    // Update Zone Overview charts (Addresses Contacted and Damage Status)
+    function updateZoneOverviewCharts() {
+      if (!sheetData || !sheetData.data || sheetData.data.length === 0) {
+        return;
+      }
+      
+      const headers = sheetData.headers;
+      const data = sheetData.data;
+      const addressMap = sheetData.addressMap;
+      
+      // Find relevant columns
+      const lastContactCol = headers.find(h => 
+        h.toLowerCase() === 'last contact date' ||
+        h.toLowerCase().includes('last contact') || 
+        h.toLowerCase().includes('contact date') ||
+        h.toLowerCase().includes('contacted')
+      );
+      const damageCol = headers.find(h => h.toLowerCase().includes('damage'));
+      
+      // 1. Addresses Contacted Chart
+      const households = new Set();
+      const householdsContacted = new Set();
+      const houseNumCol = headers.find(h => {
+        const lower = h.toLowerCase();
+        return h === 'House #' || lower === 'house #' || lower.includes('house #') || 
+               lower.includes('house#') || lower === 'house number' || lower === 'house num' ||
+               (lower === 'house' && !lower.includes('hold'));
+      });
+      const streetCol = headers.find(h => {
+        const lower = h.toLowerCase();
+        return h === 'Street' || lower === 'street' || (lower.includes('street') && !lower.includes('address'));
+      });
+
+      data.forEach(row => {
+        const houseNum = houseNumCol ? (row[houseNumCol] || '').trim() : '';
+        const street = streetCol ? (row[streetCol] || '').trim() : '';
+        const address = houseNum && street ? `${houseNum} ${street}` : '';
+        if (address) {
+          households.add(address);
+          const hasContact = lastContactCol && row[lastContactCol] && String(row[lastContactCol]).trim().length > 0;
+          if (hasContact) {
+            householdsContacted.add(address);
+          }
+        }
+      });
+
+      const householdsContactedCount = householdsContacted.size;
+      const householdsNotContactedCount = households.size - householdsContactedCount;
+
+      const addressesCtx = document.getElementById('zoneOverviewAddressesChart');
+      if (zoneOverviewAddressesChart) zoneOverviewAddressesChart.destroy();
+      if (addressesCtx) {
+        zoneOverviewAddressesChart = new Chart(addressesCtx, {
+          type: 'pie',
+          data: {
+            labels: [`Contacted (${householdsContactedCount})`, `Not Contacted (${householdsNotContactedCount})`],
+            datasets: [{
+              data: [householdsContactedCount, householdsNotContactedCount],
+              backgroundColor: ['#b4bd9b', '#bc455a'],
+              borderWidth: 2,
+              borderColor: '#fff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 5,
+                bottom: 5
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'bottom',
+                padding: 6,
+                labels: {
+                  font: {
+                    size: 10
+                  },
+                  boxWidth: 10,
+                  boxHeight: 10,
+                  padding: 8
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : '0';
+                    return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      // 2. Damage Status Chart
+      const damageCounts = {};
+      let damageUnknown = 0;
+      if (damageCol) {
+        data.forEach(row => {
+          const damage = row[damageCol] ? String(row[damageCol]).trim() : '';
+          if (damage) {
+            damageCounts[damage] = (damageCounts[damage] || 0) + 1;
+          } else {
+            damageUnknown++;
+          }
+        });
+      } else {
+        damageUnknown = data.length;
+      }
+
+      const damageLabels = Object.keys(damageCounts);
+      const damageData = Object.values(damageCounts);
+      const damageTotal = damageData.reduce((a, b) => a + b, 0) + damageUnknown;
+      
+      if (damageUnknown > 0) {
+        damageLabels.push('Unknown');
+        damageData.push(damageUnknown);
+      }
+      
+      // Use numbers instead of percentages
+      const damageLabelsWithCount = damageLabels.map((label, index) => {
+        const value = damageData[index];
+        return `${label} (${value})`;
+      });
+      
+      const damageColors = ['#bc455a', '#fdba77', '#b4bd9b', '#81bdc3', '#f6cf98', '#ccd5c3', '#f9d6d3'];
+
+      const damageCtx = document.getElementById('zoneOverviewDamageChart');
+      if (zoneOverviewDamageChart) zoneOverviewDamageChart.destroy();
+      if (damageCtx && (damageLabels.length > 0 || damageUnknown > 0)) {
+        zoneOverviewDamageChart = new Chart(damageCtx, {
+          type: 'pie',
+          data: {
+            labels: damageLabelsWithCount,
+            datasets: [{
+              data: damageData,
+              backgroundColor: damageColors.slice(0, damageLabels.length),
+              borderWidth: 2,
+              borderColor: '#fff'
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            layout: {
+              padding: {
+                top: 5,
+                bottom: 5
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'bottom',
+                padding: 6,
+                labels: {
+                  font: {
+                    size: 10
+                  },
+                  boxWidth: 10,
+                  boxHeight: 10,
+                  padding: 8
+                }
+              },
+              tooltip: {
+                callbacks: {
+                  label: function(context) {
+                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                    const percentage = total > 0 ? ((context.parsed / total) * 100).toFixed(1) : '0';
+                    const labelWithoutCount = context.label.replace(/\s*\([^)]*\)\s*$/, '');
+                    return labelWithoutCount + ': ' + context.parsed + ' (' + percentage + '%)';
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
     }
     
     // Panel B: Rebuild Progress Snapshot
@@ -5090,54 +6149,16 @@
         
         let html = '';
         
-        // Next Meeting
-        if (feed.next_meeting && feed.next_meeting.description) {
-          html += `
-            <div class="announcement-item">
-              <div class="announcement-title">Next Meeting</div>
-              <div class="announcement-description">${feed.next_meeting.description}</div>
-              ${feed.next_meeting.date ? `<div class="announcement-description"><strong>Date:</strong> ${feed.next_meeting.date}</div>` : ''}
-              ${feed.next_meeting.time ? `<div class="announcement-description"><strong>Time:</strong> ${feed.next_meeting.time}</div>` : ''}
-              ${feed.next_meeting.location ? `<div class="announcement-description"><strong>Location:</strong> ${feed.next_meeting.location}</div>` : ''}
-            </div>
-          `;
-        }
-        
-        // Newsletter
-        if (feed.newsletter && feed.newsletter.title) {
-          html += `
-            <div class="announcement-item">
-              <div class="announcement-title">Newsletter</div>
-              <div class="announcement-description">${feed.newsletter.title}</div>
-              ${feed.newsletter.url ? `<a href="${feed.newsletter.url}" target="_blank" class="announcement-link">Read more →</a>` : ''}
-            </div>
-          `;
-        }
-        
-        // Volunteer Asks
-        if (feed.volunteer_asks && feed.volunteer_asks.length > 0) {
-          feed.volunteer_asks.forEach(item => {
-            if (item.title || item.description) {
+        // Display each item: Label (bold) followed by Content from columns B, C, D, etc.
+        if (feed.items && feed.items.length > 0) {
+          feed.items.forEach(item => {
+            if (item.label) {
               html += `
                 <div class="announcement-item">
-                  <div class="announcement-title">${item.title || 'Volunteer Opportunity'}</div>
-                  ${item.description ? `<div class="announcement-description">${item.description}</div>` : ''}
-                  ${item.url ? `<a href="${item.url}" target="_blank" class="announcement-link">Learn more →</a>` : ''}
-                </div>
-              `;
-            }
-          });
-        }
-        
-        // Partner Items
-        if (feed.partner_items && feed.partner_items.length > 0) {
-          feed.partner_items.forEach(item => {
-            if (item.title || item.description) {
-              html += `
-                <div class="announcement-item">
-                  <div class="announcement-title">${item.title || 'Partner Item'}</div>
-                  ${item.description ? `<div class="announcement-description">${item.description}</div>` : ''}
-                  ${item.url ? `<a href="${item.url}" target="_blank" class="announcement-link">Learn more →</a>` : ''}
+                  <div class="announcement-title"><strong>${item.label}</strong></div>
+                  ${item.content && item.content.length > 0 ? item.content.map(contentText => 
+                    `<div class="announcement-description">${contentText}</div>`
+                  ).join('') : ''}
                 </div>
               `;
             }

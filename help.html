@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Help - Altagether Zone Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya:wght@800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --dark-green: #283618;
+      --medium-green: #606C38;
+      --light-cream: #FEFAE0;
+      --tan: #DDA15E;
+      --brown: #BC6C25;
+      --light-green: #afcc8e;
+      --lighter-green: #cdf4a0;
+      
+      /* Semantic color mappings */
+      --primary: var(--medium-green);
+      --primary-dark: var(--dark-green);
+      --accent: var(--tan);
+      --accent-dark: var(--brown);
+      --background: var(--light-cream);
+      --background-light: var(--lighter-green);
+      --highlight: var(--light-green);
+      --text: var(--dark-green);
+      --text-light: rgba(40, 54, 24, 0.7);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--background) 0%, var(--background-light) 100%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Alegreya', serif;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      padding-bottom: 30px;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      margin: 0 0 10px 0;
+      text-shadow: 0 2px 4px rgba(40, 54, 24, 0.1);
+    }
+
+    .header p {
+      font-size: 1.1rem;
+      color: var(--text-light);
+    }
+
+    .help-section {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 12px rgba(40, 54, 24, 0.15), 0 2px 4px rgba(40, 54, 24, 0.1);
+    }
+
+    .help-section h2 {
+      font-size: 1.8rem;
+      margin: 0 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .help-section h3 {
+      font-size: 1.3rem;
+      margin: 25px 0 15px 0;
+      color: var(--primary);
+    }
+
+    .help-section p {
+      margin: 0 0 15px 0;
+    }
+
+    .help-section ul, .help-section ol {
+      margin: 15px 0;
+      padding-left: 30px;
+    }
+
+    .help-section li {
+      margin-bottom: 10px;
+    }
+
+    .help-section code {
+      background: rgba(96, 108, 56, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+
+    .step-box {
+      background: rgba(175, 204, 142, 0.2);
+      border-left: 4px solid var(--primary);
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+
+    .step-box strong {
+      color: var(--primary-dark);
+    }
+
+    .note-box {
+      background: rgba(221, 161, 94, 0.15);
+      border-left: 4px solid var(--accent);
+      padding: 15px 20px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+
+    .note-box strong {
+      color: var(--accent-dark);
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: var(--light-cream);
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 8px rgba(40, 54, 24, 0.3);
+    }
+
+    .back-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(40, 54, 24, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Altagether Zone Dashboard</h1>
+      <p>Help & Instructions</p>
+    </div>
+
+    <div class="help-section">
+      <h2>Getting Started</h2>
+      
+      <h3>Getting Started - Two Simple Steps</h3>
+      
+      <h3>Step 1: Sign In with Google</h3>
+      <div class="step-box">
+        <p><strong>First, sign in with Google:</strong></p>
+        <ul>
+          <li>When you first open the dashboard, you'll see a welcome message</li>
+          <li>Click the "Sign in with Google" button in Step 1</li>
+          <li>Grant the dashboard permission to access your Google Sheets</li>
+          <li>Once signed in, you'll see a checkmark confirming you're signed in</li>
+        </ul>
+        <p><strong>Why sign in?</strong> Signing in allows the dashboard to securely access and edit your spreadsheet data.</p>
+      </div>
+
+      <h3>Step 2: Link Your Spreadsheet</h3>
+      <div class="step-box">
+        <p><strong>After signing in, link your spreadsheet:</strong></p>
+        <ul>
+          <li>Open your Google Sheets spreadsheet that contains your zone data</li>
+          <li>Copy the URL from your browser's address bar</li>
+          <li>In the dashboard welcome message, paste the URL into the text box in Step 2</li>
+          <li>Click the "Load" button</li>
+        </ul>
+        <p><strong>Note:</strong> You can also change your linked spreadsheet later using the "Change spreadsheet" option in the left navigation menu.</p>
+      </div>
+
+      <div class="note-box">
+        <strong>Note:</strong> Make sure your spreadsheet is shared with your Google account, or set to "Anyone with the link can view/edit" depending on your needs.
+      </div>
+    </div>
+
+    <div class="help-section">
+      <h2>Using the Dashboard</h2>
+
+      <h3>Navigation</h3>
+      <p>The dashboard has several views accessible from the left navigation menu:</p>
+      <ul>
+        <li><strong>Home:</strong> Overview of your zone with key statistics and announcements</li>
+        <li><strong>Map:</strong> Interactive map showing addresses in your zone</li>
+        <li><strong>Addresses & People:</strong> Table view of all addresses and residents</li>
+        <li><strong>Zone Overview:</strong> Charts and statistics about your zone</li>
+        <li><strong>Tools:</strong> Additional tools and utilities</li>
+        <li><strong>Actions:</strong> Information about zone actions</li>
+      </ul>
+
+      <h3>Viewing Address Details</h3>
+      <p>To view details about a specific address:</p>
+      <ul>
+        <li>On the Map view: Click on a marker or address in the list</li>
+        <li>On the Addresses & People view: Click on a row in the table</li>
+      </ul>
+      <p>The address details will appear in the panel on the right side of the screen.</p>
+
+      <h3>Editing Data</h3>
+      <p>When signed in, you can edit data directly in the dashboard:</p>
+      <ul>
+        <li><strong>Notes fields:</strong> Click on any notes field and type to edit</li>
+        <li><strong>Dropdown fields:</strong> Use the dropdown menus to select values (e.g., Damage Status, Household Status)</li>
+        <li><strong>Other fields:</strong> Click on editable fields to modify them</li>
+      </ul>
+      <p>Changes are automatically saved after a short delay, or you can click "Save Changes" to save immediately.</p>
+    </div>
+
+    <div class="help-section">
+      <h2>Spreadsheet Requirements</h2>
+
+      <h3>Required Columns</h3>
+      <p>Your spreadsheet should include at least these columns:</p>
+      <ul>
+        <li><strong>Address:</strong> The street address (required)</li>
+        <li><strong>Resident Name:</strong> Name of the person at that address</li>
+      </ul>
+
+      <h3>Optional Columns</h3>
+      <p>You can also include these columns for additional functionality:</p>
+      <ul>
+        <li><strong>Notes:</strong> General notes about the address</li>
+        <li><strong>Damage:</strong> Damage status information</li>
+        <li><strong>Household Status:</strong> Status of the household</li>
+        <li><strong>Contact Notes:</strong> Notes about contact attempts</li>
+        <li>Any other columns you want to track</li>
+      </ul>
+
+      <h3>Zone Notes Sheet</h3>
+      <p>You can create a separate sheet named "Zone Notes" in your spreadsheet with:</p>
+      <ul>
+        <li>Zone-level notes</li>
+        <li>KML URL for zone boundaries (to display on the map)</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <h2>Troubleshooting</h2>
+
+      <h3>Can't See Data</h3>
+      <ul>
+        <li><strong>First, make sure you've signed in with Google</strong> - This is required before you can load any data</li>
+        <li>Verify that your spreadsheet URL is correct</li>
+        <li>Check that your spreadsheet is shared with your Google account or set to "Anyone with the link can view"</li>
+        <li>Ensure your spreadsheet has an "Address" column</li>
+        <li>Try clicking "Load" again after signing in</li>
+      </ul>
+
+      <h3>Can't Edit Data</h3>
+      <ul>
+        <li>Make sure you're signed in with Google</li>
+        <li>Verify that you have edit permissions on the spreadsheet</li>
+        <li>Check that the spreadsheet isn't set to "View only" for your account</li>
+      </ul>
+
+      <h3>Map Not Showing</h3>
+      <ul>
+        <li>Make sure you've loaded a spreadsheet with addresses</li>
+        <li>Check that your addresses include street names and numbers</li>
+        <li>Verify your internet connection</li>
+      </ul>
+    </div>
+
+    <div class="help-section">
+      <h2>Tips</h2>
+      <ul>
+        <li>Use filters on the Map and Addresses & People views to quickly find specific addresses</li>
+        <li>Use Contact Mode to track when you've contacted residents</li>
+        <li>Save your spreadsheet URL - it will be remembered for next time</li>
+        <li>Changes are auto-saved, but you can also click "Save Changes" to save immediately</li>
+        <li>The dashboard updates in real-time as you make changes</li>
+      </ul>
+    </div>
+
+    <a href="javascript:window.close()" class="back-link">Close Help</a>
+  </div>
+</body>
+</html>
+
